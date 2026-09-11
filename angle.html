@@ -354,6 +354,9 @@ window.onload = function() {
             if (power >= 100 || power <= 0) powerDir *= -1;
         }
         else if (state === "SHOOTING") {
+            const prevX = ball.x;
+            const prevY = ball.y;
+
             ballTrail.unshift({ x: ball.x, y: ball.y, r: 16, a: 0.36 });
             if (ballTrail.length > 6) ballTrail.pop();
             ball.x += ball.vx;
@@ -368,22 +371,34 @@ window.onload = function() {
                 setTimeout(resetPlayer, 1000);
             }
 
-            if (ball.y <= goalY + 18 && ball.y >= goalY - 16) {
-                if (Math.abs(ball.x - gk.x) < 43) { 
-                    setMessage("선방!");
-                    showShotEffect("선방!", "shot-save");
-                    triggerKeeperReaction("save");
-                    ball.vy *= -0.55; 
-                    ball.vx *= 0.82;
-                    state = "RESULT";
-                    setTimeout(resetPlayer, 1000);
-                }
+            // 골라인(y = goalY)을 실제로 통과한 정확한 x좌표를 계산한다.
+            let crossedGoalLine = false;
+            let goalCrossX = ball.x;
+            if (prevY > goalY && ball.y <= goalY) {
+                const t = (prevY - goalY) / (prevY - ball.y);
+                goalCrossX = prevX + (ball.x - prevX) * t;
+                crossedGoalLine = true;
             }
 
-            if (ball.y <= goalY && state === "SHOOTING") {
-                if (power > 85) { 
+            // 골키퍼 선방 판정도 골라인 교차 위치를 기준으로 처리한다.
+            if (crossedGoalLine && Math.abs(goalCrossX - gk.x) < 43) {
+                setMessage("선방!");
+                showShotEffect("선방!", "shot-save");
+                ball.x = goalCrossX;
+                ball.y = goalY;
+                triggerKeeperReaction("save");
+                ball.vy *= -0.55;
+                ball.vx *= 0.82;
+                state = "RESULT";
+                setTimeout(resetPlayer, 1000);
+            }
+
+            if (crossedGoalLine && state === "SHOOTING") {
+                if (power > 85) {
                     setMessage("❌ 홈런! 너무 세게 찼습니다!");
-                } else if (ball.x > goalLeft && ball.x < goalRight) {
+                } else if (goalCrossX > goalLeft && goalCrossX < goalRight) {
+                    ball.x = goalCrossX;
+                    ball.y = goalY;
                     score++;
                     document.getElementById("scoreDisplay").innerText = `누적: ${score} 골`;
                     setMessage("골!");
