@@ -263,7 +263,7 @@ window.onload = function() {
         
         let y_c = 120 + Math.random() * 160;
         circleCenter = { x: 300, y: y_c };
-        circleRadius = Math.sqrt(Math.pow(100, 2) + Math.pow(y_c - goalY, 2));
+        circleRadius = Math.sqrt(Math.pow(goalWidth / 2, 2) + Math.pow(y_c - goalY, 2));
         
         playerTheta = Math.PI / 2; 
         playerDir = (Math.random() > 0.5) ? 1 : -1;
