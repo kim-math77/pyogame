@@ -396,7 +396,7 @@ window.onload = function() {
             if (crossedGoalLine && state === "SHOOTING") {
                 if (power > 85) {
                     setMessage("❌ 홈런! 너무 세게 찼습니다!");
-                } else if (goalCrossX > goalLeft && goalCrossX < goalRight) {
+                } else if (goalCrossX > goalLeft - goalPostWidth / 2 && goalCrossX < goalRight + goalPostWidth / 2) {
                     ball.x = goalCrossX;
                     ball.y = goalY;
                     score++;
