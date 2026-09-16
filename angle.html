@@ -572,9 +572,11 @@ window.onload = function() {
             }
         }
 
-        // 공
-        ctx.font = "38px Arial";
-        ctx.fillText("⚽", ball.x, ball.y);
+        // 공: 슈팅이 시작된 뒤에만 표시
+        if (state === "SHOOTING" || state === "RESULT") {
+            ctx.font = "38px Arial";
+            ctx.fillText("⚽", ball.x, ball.y);
+        }
     }
 };
 </script>
