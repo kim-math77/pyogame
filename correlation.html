@@ -3,178 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>데이터 탐정: 숨겨진 관계를 찾아라</title>
+<title>데이터 탐정: 나의 추리를 제출하라</title>
 <style>
 :root{
-  --ink:#263238; --paper:#fffaf0; --paper2:#f3e7cf; --brown:#6e4f35; --brown2:#9a7654;
-  --gold:#d7a52b; --red:#b94d4d; --green:#3c8c72; --blue:#477ca8;
+  --ink:#2d3136; --paper:#fffaf1; --paper2:#f3e6cf; --brown:#72543c; --line:#b99b73;
+  --mint:#d7f1e8; --pink:#f8d8e6; --sky:#dcecff; --gold:#e2b84e; --blue:#4f7da5; --green:#4d8b73;
 }
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;font-family:'Malgun Gothic',sans-serif;color:var(--ink);background:
-  radial-gradient(circle at 15% 15%,rgba(255,245,214,.95),transparent 30%),
-  radial-gradient(circle at 85% 10%,rgba(213,233,226,.75),transparent 28%),
-  linear-gradient(135deg,#7a5a42 0%,#ab8a67 52%,#72503b 100%);padding:18px;text-align:center}
-.wrap{max-width:1080px;margin:auto;background:rgba(255,250,240,.97);border:3px solid #4d3628;border-radius:22px;box-shadow:0 18px 45px rgba(37,24,16,.38);overflow:hidden}
-header{padding:18px 24px 12px;background:linear-gradient(180deg,#fff6df,#f3e0b7);border-bottom:2px dashed #9f7c55}
-h1{margin:0;color:#523827;font-size:30px}.subtitle{margin:7px 0 0;color:#715842;font-weight:bold}
-.topbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 22px;background:#ede0c6;font-weight:bold;border-bottom:1px solid #c9ae86}
-.badge{background:#fffaf0;border:1px solid #b89a70;border-radius:999px;padding:7px 13px}
+  radial-gradient(circle at 10% 12%,rgba(215,241,232,.98),transparent 28%),
+  radial-gradient(circle at 88% 14%,rgba(248,216,230,.95),transparent 28%),
+  linear-gradient(135deg,#dcecff 0%,#f8e5ee 48%,#dff3ea 100%);padding:18px;text-align:center}
+.wrap{max-width:1050px;margin:auto;background:rgba(255,250,241,.97);border:2px solid #a88a64;border-radius:22px;box-shadow:0 18px 42px rgba(66,49,38,.23);overflow:hidden}
+header{padding:20px 24px 14px;background:linear-gradient(180deg,#fff7df,#f2e2bd);border-bottom:2px dashed #b59569}
+h1{margin:0;color:#513927;font-size:30px}.subtitle{margin:8px 0 0;color:#6d5948;font-weight:bold;line-height:1.55}
+.topbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 20px;background:#ecdfc7;border-bottom:1px solid #cfb58f;font-weight:bold}.badge{background:#fffaf1;border:1px solid #b99b73;border-radius:999px;padding:7px 12px}
 .screen{display:none;padding:24px}.screen.active{display:block}
-.difficulty-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:26px auto;max-width:900px}
-.diff-card{border:2px solid #b69b76;border-radius:18px;background:#fffdf8;padding:22px;cursor:pointer;box-shadow:0 7px 16px rgba(75,52,33,.14);transition:.2s}
-.diff-card:hover{transform:translateY(-5px);box-shadow:0 12px 22px rgba(75,52,33,.20)}
-.diff-card h3{margin:0 0 10px;font-size:23px}.easy h3{color:#26795f}.normal h3{color:#aa7418}.hard h3{color:#a23d47}
-.rules{max-width:760px;margin:18px auto;padding:16px 20px;border-radius:14px;background:#f6ecd8;text-align:left;line-height:1.75;border-left:6px solid #9a7654}
-.case-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:stretch}
-.file-card,.evidence-card{background:#fffdf7;border:2px solid #b79b76;border-radius:17px;box-shadow:0 7px 16px rgba(74,52,35,.12);padding:18px;text-align:left}
-.file-title{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:2px dashed #c5ac87;padding-bottom:10px;margin-bottom:12px}
-.file-title h2{margin:0;font-size:23px;color:#553a29}.stamp{transform:rotate(-5deg);color:#a34040;border:3px solid #a34040;padding:4px 9px;border-radius:5px;font-weight:900}
-.scene{background:#f6ead5;border-radius:12px;padding:14px;line-height:1.7;margin-bottom:12px}
-.vars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.var{background:#ecf4f2;border:1px solid #a8c7c0;border-radius:12px;padding:11px;font-weight:bold;text-align:center}
-.chart-wrap{background:#fff;border-radius:12px;border:1px solid #ccb99a;padding:8px;position:relative}
-#plot{width:100%;height:315px;display:block}.axis-label{font-size:12px;fill:#5c5148}.dot{fill:#477ca8;stroke:#fff;stroke-width:1.7;opacity:.92}
-.question{font-size:20px;font-weight:900;margin:16px 0 12px;color:#493225}
-.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{border:2px solid #baa17d;background:#fffaf0;color:#3e342d;border-radius:12px;padding:13px 10px;font-size:16px;font-weight:bold;cursor:pointer;transition:.15s}.choice:hover{background:#f3e6ce;transform:translateY(-2px)}.choice.correct{background:#dff3e9;border-color:#4d947b}.choice.wrong{background:#f8dede;border-color:#c86969}
-.clue-area{margin-top:15px}.clue-list{display:flex;flex-direction:column;gap:9px}.clue{background:#fff4c9;border:1px dashed #b7933c;border-radius:10px;padding:10px 12px;line-height:1.55}.clue.locked{filter:blur(3px);opacity:.5;user-select:none}.hint-btn,.next-btn,.primary-btn,.back-btn{border:0;border-radius:11px;padding:12px 20px;font-size:17px;font-weight:900;cursor:pointer}.hint-btn{background:#ddad39;color:#352710;margin-top:12px}.next-btn,.primary-btn{background:#477ca8;color:#fff}.next-btn{display:none;margin:18px auto 0}.back-btn{background:#85684f;color:#fff;margin-top:14px}
-.feedback{display:none;margin-top:14px;border-radius:12px;padding:14px;text-align:left;line-height:1.65;font-weight:bold}.feedback.good{display:block;background:#e4f3eb;border:1px solid #82b49f}.feedback.bad{display:block;background:#fae3e0;border:1px solid #ce8b84}
-.hidden-box{display:none;margin-top:14px;padding:14px;border-radius:12px;background:#eef1f7;border:1px solid #aebbd0}.hidden-box h3{margin:0 0 10px}.hidden-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hidden-choice{padding:11px;border:1px solid #9aa9be;border-radius:9px;background:white;cursor:pointer;font-weight:bold}
-.result-card{max-width:650px;margin:15px auto;background:#fffdf7;border:2px solid #b79b76;border-radius:20px;padding:28px;box-shadow:0 10px 22px rgba(74,52,35,.15)}.result-score{font-size:52px;font-weight:900;color:#9a6c23;margin:8px}.result-list{text-align:left;background:#f4ead8;border-radius:12px;padding:14px 18px;line-height:1.8}
-@media(max-width:820px){.difficulty-grid{grid-template-columns:1fr}.case-layout{grid-template-columns:1fr}.choice-grid,.hidden-grid{grid-template-columns:1fr}#plot{height:270px}h1{font-size:25px}}
+.intro{max-width:790px;margin:0 auto 20px;background:#fffdf7;border:2px solid #c9ad84;border-radius:16px;padding:18px 20px;text-align:left;line-height:1.8;box-shadow:0 7px 16px rgba(76,56,40,.10)}
+.identity{max-width:760px;margin:18px auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.identity input{width:100%;padding:12px 13px;border-radius:10px;border:1px solid #bca078;background:#fff;font-size:16px;text-align:center}
+.primary,.secondary,.back{border:0;border-radius:11px;padding:13px 22px;font-size:17px;font-weight:900;cursor:pointer}.primary{background:#4f7da5;color:#fff}.secondary{background:#dfb44a;color:#3d2e14}.back{background:#7d6857;color:white}.primary:hover,.secondary:hover,.back:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.case-grid{display:grid;grid-template-columns:1.03fr .97fr;gap:20px;align-items:start}.card{background:#fffdf7;border:2px solid #c3a57d;border-radius:18px;padding:18px;text-align:left;box-shadow:0 7px 17px rgba(78,57,40,.12)}
+.case-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px dashed #ceb38d}.case-head h2{margin:0;color:#533b2a;font-size:23px}.stamp{border:3px solid #a34b4b;color:#a34b4b;border-radius:5px;padding:4px 8px;font-weight:900;transform:rotate(-4deg)}
+.scene{margin-top:13px;background:#f6ead4;border-radius:12px;padding:15px;line-height:1.75}.vars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0}.var{background:#eaf5f2;border:1px solid #afd0c6;border-radius:11px;padding:11px;text-align:center;font-weight:bold}
+.chart-wrap{background:#fff;border:1px solid #d2bea0;border-radius:12px;padding:8px}#plot{width:100%;height:315px;display:block}.axis-label{font-size:12px;fill:#5b5148}.dot{fill:#4f7da5;stroke:#fff;stroke-width:1.7;opacity:.92}
+.question{font-size:19px;font-weight:900;color:#4b3424;margin:0 0 11px}.stance-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stance{padding:12px;border:2px solid #baa17d;border-radius:11px;background:#fffaf0;color:#3f362f;font-weight:bold;font-size:15px;cursor:pointer;line-height:1.35}.stance:hover{background:#f3e6ce}.stance.selected{background:#ddecff;border-color:#4f7da5;box-shadow:0 0 0 2px rgba(79,125,165,.12)}
+.label{display:block;margin:15px 0 6px;font-weight:900;color:#5a4230}.reason,.hidden-input{width:100%;border:1px solid #bca17c;border-radius:11px;background:#fff;padding:12px 13px;font-family:inherit;font-size:16px;line-height:1.55}.reason{min-height:140px;resize:vertical}.hidden-input{min-height:48px}
+.note{margin:12px 0 0;background:#fff4c9;border:1px dashed #b99845;border-radius:10px;padding:10px 12px;line-height:1.55;font-size:14px}.actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}.status{font-weight:bold;color:#5d554c}.status.ok{color:#39745e}.status.warn{color:#a36a2e}
+.share-box{display:none;margin-top:16px;background:#eef4fb;border:1px solid #aebfd2;border-radius:12px;padding:14px}.share-box h3{margin:0 0 8px}.shared-list{display:flex;flex-direction:column;gap:9px}.shared-item{background:white;border-radius:10px;border:1px solid #cbd6e2;padding:10px 12px;line-height:1.55}.shared-item b{color:#4f6d8a}
+.result{max-width:720px;margin:0 auto;background:#fffdf7;border:2px solid #c3a57d;border-radius:20px;padding:28px;box-shadow:0 10px 24px rgba(78,57,40,.13)}.result h2{font-size:30px;color:#533b2a}.summary{margin:18px auto;background:#f5ead8;border-radius:12px;padding:16px;text-align:left;line-height:1.8}.saved-list{max-height:320px;overflow:auto;text-align:left;background:#fff;border:1px solid #dbc9ad;border-radius:12px;padding:12px}.saved-list div{padding:8px 6px;border-bottom:1px dashed #ddd}.saved-list div:last-child{border-bottom:0}
+.setup-warning{display:none;max-width:820px;margin:0 auto 14px;background:#fff1d7;border:1px solid #d5a95b;border-radius:12px;padding:10px 14px;color:#7b5420;font-weight:bold;line-height:1.55}
+@media(max-width:820px){.case-grid{grid-template-columns:1fr}.identity{grid-template-columns:1fr}.stance-grid{grid-template-columns:1fr}#plot{height:270px}h1{font-size:25px}.screen{padding:16px}}
 </style>
 <script>
 (async function checkCorrelationAuth(){
   if (sessionStorage.getItem("correlationUnlocked") === "true") return;
   const pwd = prompt("데이터 탐정 비밀번호를 입력하세요 🔒");
-  if (!pwd) {
-    alert("비밀번호가 필요합니다.");
-    location.href = "stat.html";
-    return;
-  }
-  try {
-    const bytes = new TextEncoder().encode(pwd);
-    const digest = await crypto.subtle.digest("SHA-256", bytes);
-    const hash = Array.from(new Uint8Array(digest))
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("");
-    const target = [
-      "3433d25f","e8410d50","fde13e53","cfdd8883",
-      "6cce4dd8","2a97a13c","de8d7bf1","a42db98b"
-    ].join("");
-    if (hash === target) {
-      sessionStorage.setItem("correlationUnlocked", "true");
-      return;
-    }
-  } catch (e) {}
-  alert("비밀번호가 틀렸습니다! ❌");
-  location.href = "stat.html";
+  if (!pwd) { alert("비밀번호가 필요합니다."); location.href="stat.html"; return; }
+  try{
+    const bytes=new TextEncoder().encode(pwd);
+    const digest=await crypto.subtle.digest("SHA-256",bytes);
+    const hash=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    const target=["3433d25f","e8410d50","fde13e53","cfdd8883","6cce4dd8","2a97a13c","de8d7bf1","a42db98b"].join("");
+    if(hash===target){sessionStorage.setItem("correlationUnlocked","true");return;}
+  }catch(e){}
+  alert("비밀번호가 틀렸습니다! ❌"); location.href="stat.html";
 })();
 </script>
 </head>
 <body>
 <div class="wrap">
-<header><h1>🔎 데이터 탐정: 숨겨진 관계를 찾아라</h1><p class="subtitle">산점도 속 관계를 읽고, 진짜 원인인지 숨은 변수가 있는지 추리하세요.</p></header>
-<div class="topbar"><span class="badge" id="levelBadge">난이도 선택</span><span class="badge" id="progressBadge">사건 0 / 5</span><span class="badge" id="scoreBadge">탐정 점수 0</span></div>
+<header>
+  <h1>🔎 데이터 탐정: 나의 추리를 제출하라</h1>
+  <p class="subtitle">상관관계에는 하나의 정답만 있는 경우가 많지 않습니다.<br>자료를 보고 자신의 판단을 정한 뒤, <b>왜 그렇게 생각했는지 근거를 적어 보세요.</b></p>
+</header>
+<div class="topbar"><span class="badge" id="progressBadge">사건 0 / 10</span><span class="badge" id="submitBadge">제출 0 / 10</span><span class="badge">정답 맞히기보다 근거 설명하기</span></div>
 
 <section id="startScreen" class="screen active">
-  <div class="rules">
-    <b>🗂 사건 수사 규칙</b><br>
-    사건 파일에는 두 변수와 산점도가 제시됩니다. 먼저 관계를 판단하고, 난이도가 올라가면 그 관계가 직접적인 관련인지, 제3의 요인 때문인지까지 추리합니다.<br>
-    💡 단서는 한 단계씩 열 수 있지만 <b>단서 1개당 10점</b>이 차감됩니다. 첫 시도 정답은 <b>+20점 보너스</b>!
+  <div id="setupWarning" class="setup-warning">⚠ 아직 Google Apps Script 주소가 연결되지 않았습니다. 지금은 이 기기 브라우저에만 임시 저장됩니다.</div>
+  <div class="intro">
+    <b>🗂 활동 방법</b><br>
+    ① 두 변수의 산점도와 상황을 읽습니다.<br>
+    ② 가장 타당하다고 생각하는 해석을 하나 선택합니다.<br>
+    ③ <b>그렇게 판단한 이유</b>를 자신의 말로 씁니다.<br>
+    ④ 필요하다면 두 변수에 함께 영향을 줄 수 있는 <b>숨은 요인</b>도 적습니다.<br><br>
+    <b>중요:</b> 이 활동은 자동 채점하지 않습니다. 같은 자료를 보고도 다른 설명이 나올 수 있으며, 핵심은 근거의 타당성을 비교하는 것입니다.
   </div>
-  <div class="difficulty-grid">
-    <div class="diff-card easy" onclick="startGame('easy')"><h3>초급 · 관계 포착</h3><p>양의 상관 / 음의 상관 / 상관 없음</p><p>산점도의 방향부터 정확히 읽어 보세요.</p></div>
-    <div class="diff-card normal" onclick="startGame('normal')"><h3>중급 · 원인 의심</h3><p>직접적인 관련인가 / 다른 이유가 있는가</p><p>상관관계가 보인다는 사실만으로 원인을 단정하지 않습니다.</p></div>
-    <div class="diff-card hard" onclick="startGame('hard')"><h3>고급 · 숨은 변수 추적</h3><p>직접 관련 / 제3의 요인 / 우연 / 판단 보류</p><p>일부 사건은 숨은 변수까지 찾고, 애매한 자료에서는 성급한 결론을 피해야 합니다.</p></div>
+  <div class="identity">
+    <input id="classInput" placeholder="반 (예: 3-2)" maxlength="12">
+    <input id="numberInput" placeholder="번호 (예: 17)" maxlength="12">
+    <input id="nickInput" placeholder="닉네임 또는 이름" maxlength="20">
   </div>
-  <button class="back-btn" onclick="location.href='stat.html'">⬅ 통계 게임으로 돌아가기</button>
+  <button class="primary" onclick="beginActivity()">활동 시작 ▶</button>
+  <br><button class="back" style="margin-top:12px" onclick="location.href='stat.html'">⬅ 통계 콘텐츠로 돌아가기</button>
 </section>
 
-<section id="gameScreen" class="screen">
- <div class="case-layout">
-  <div class="file-card">
-   <div class="file-title"><h2 id="caseTitle">사건 파일</h2><span class="stamp">CONFIDENTIAL</span></div>
-   <div class="scene" id="caseScene"></div>
-   <div class="vars"><div class="var" id="varX"></div><div class="var" id="varY"></div></div>
-   <div class="chart-wrap"><svg id="plot" viewBox="0 0 500 315" aria-label="산점도"></svg></div>
+<section id="caseScreen" class="screen">
+ <div class="case-grid">
+  <div class="card">
+    <div class="case-head"><h2 id="caseTitle">사건 파일</h2><span class="stamp">CASE FILE</span></div>
+    <div class="scene" id="caseScene"></div>
+    <div class="vars"><div class="var" id="varX"></div><div class="var" id="varY"></div></div>
+    <div class="chart-wrap"><svg id="plot" viewBox="0 0 500 315" aria-label="산점도"></svg></div>
   </div>
-  <div class="evidence-card">
-   <div class="question" id="questionText"></div>
-   <div class="choice-grid" id="choiceGrid"></div>
-   <div id="hiddenBox" class="hidden-box"><h3>🔐 숨은 변수는 무엇일까?</h3><div id="hiddenGrid" class="hidden-grid"></div></div>
-   <div id="feedback" class="feedback"></div>
-   <div class="clue-area"><b>📌 현장 단서</b><div class="clue-list" id="clueList"></div><button id="hintBtn" class="hint-btn" onclick="openHint()">단서 하나 열기 (-10)</button></div>
-   <button id="nextBtn" class="next-btn" onclick="nextCase()">다음 사건 ▶</button>
+  <div class="card">
+    <div class="question">현재 자료를 보고 가장 타당하다고 생각하는 해석은?</div>
+    <div id="stanceGrid" class="stance-grid"></div>
+    <label class="label" for="reasonInput">왜 그렇게 생각했나요?</label>
+    <textarea id="reasonInput" class="reason" placeholder="예: 공부 시간이 늘면 연습량이 늘어 점수에 영향을 줄 수 있지만, 원래 학습동기가 높은 학생이 공부도 오래 했을 가능성도 있다."></textarea>
+    <label class="label" for="hiddenInput">함께 영향을 줄 수 있는 다른 요인이 있다면? <span style="font-weight:normal">(선택)</span></label>
+    <input id="hiddenInput" class="hidden-input" placeholder="예: 학습동기, 기초실력, 생활습관 등">
+    <div class="note">💡 ‘정답처럼 보이는 문장’을 찾기보다 <b>다른 설명 가능성</b>이 있는지도 생각해 보세요.</div>
+    <div class="actions">
+      <span id="statusText" class="status">판단과 이유를 작성하세요.</span>
+      <button id="submitBtn" class="primary" onclick="submitCurrent()">이 추리 제출하기</button>
+    </div>
+    <div id="shareBox" class="share-box">
+      <h3>💬 선생님이 공개한 다른 추리</h3>
+      <div id="sharedList" class="shared-list"></div>
+    </div>
+    <div class="actions" style="justify-content:flex-end">
+      <button id="nextBtn" class="secondary" style="display:none" onclick="nextCase()">다음 사건 ▶</button>
+    </div>
   </div>
  </div>
 </section>
 
 <section id="resultScreen" class="screen">
- <div class="result-card"><h2>🕵️ 수사 종료</h2><div class="result-score" id="finalScore">0점</div><p id="resultLine"></p><div class="result-list" id="resultList"></div><button class="primary-btn" onclick="restart()">다른 난이도 도전</button><br><button class="back-btn" onclick="location.href='stat.html'">⬅ 통계 게임으로 돌아가기</button></div>
+  <div class="result">
+    <h2>🕵️ 추리 제출 완료</h2>
+    <p>10개의 사건에 대한 자신의 판단과 근거를 모두 제출했습니다.</p>
+    <div class="summary">이 활동에는 자동 정답이 없습니다.<br>수업에서는 서로 다른 설명을 비교하면서 <b>상관관계만으로 인과관계를 단정할 수 있는지</b>, 어떤 추가 정보가 필요한지 토론해 보세요.</div>
+    <div id="savedList" class="saved-list"></div>
+    <button class="primary" style="margin-top:16px" onclick="restartActivity()">처음부터 다시 하기</button>
+    <br><button class="back" style="margin-top:10px" onclick="location.href='stat.html'">⬅ 통계 콘텐츠로 돌아가기</button>
+  </div>
 </section>
 </div>
 <script>
-const cases={
- easy:[
-  {title:'사건 01 · 연습량 기록',scene:'축구부의 일주일 연습 시간과 슈팅 정확도를 조사했다.',x:'연습 시간',y:'슈팅 정확도',pattern:'positive',answer:'positive',explain:'점들이 대체로 오른쪽 위를 향하므로 양의 상관관계가 보입니다.',clues:['x가 커질수록 y도 커지는 점이 많다.','왼쪽 아래와 오른쪽 위에 점이 많이 모인다.'],seed:11},
-  {title:'사건 02 · 등교 거리',scene:'학생들의 집에서 학교까지 거리와 등교에 걸린 시간을 조사했다.',x:'학교까지 거리',y:'등교 시간',pattern:'positive',answer:'positive',explain:'거리가 멀수록 등교 시간이 긴 경향이 있어 양의 상관관계입니다.',clues:['두 변수가 같은 방향으로 증가한다.','오른쪽으로 갈수록 점의 높이도 대체로 높아진다.'],seed:18},
-  {title:'사건 03 · 키와 팔 길이',scene:'한 학년 학생들의 키와 팔 길이를 측정했다.',x:'키',y:'팔 길이',pattern:'positive',answer:'positive',explain:'키가 큰 학생일수록 팔 길이도 긴 경향이 나타나 양의 상관관계가 보입니다.',clues:['두 값이 함께 커지는 경향을 찾는다.','점들의 흐름이 오른쪽 위를 향한다.'],seed:27},
-  {title:'사건 04 · 속도와 시간',scene:'같은 1 km 구간을 이동할 때 자전거 평균 속도와 걸린 시간을 기록했다.',x:'평균 속도',y:'걸린 시간',pattern:'negative',answer:'negative',explain:'속도가 커질수록 걸린 시간이 줄어드는 경향이므로 음의 상관관계입니다.',clues:['한 변수가 증가할 때 다른 변수는 감소한다.','점들의 흐름이 오른쪽 아래로 향한다.'],seed:34},
-  {title:'사건 05 · 사물함 번호',scene:'학생들의 사물함 번호와 수학 퀴즈 점수를 비교했다.',x:'사물함 번호',y:'수학 퀴즈 점수',pattern:'none',answer:'none',explain:'점들이 특정 방향 없이 흩어져 있어 뚜렷한 상관관계가 없습니다.',clues:['번호가 커져도 점수는 일정한 방향으로 변하지 않는다.','위·아래로 불규칙하게 흩어져 있다.'],seed:43},
-  {title:'사건 06 · 기온과 난방',scene:'겨울철 하루 평균 기온과 교실 난방 사용 시간을 조사했다.',x:'평균 기온',y:'난방 사용 시간',pattern:'negative',answer:'negative',explain:'기온이 높아질수록 난방 시간이 줄어드는 경향이므로 음의 상관관계입니다.',clues:['x가 커질수록 y가 작아진다.','오른쪽 아래 방향의 흐름이 뚜렷하다.'],seed:55},
-  {title:'사건 07 · 책의 두께와 쪽수',scene:'여러 권의 책에서 책의 두께와 전체 쪽수를 조사했다.',x:'책의 두께',y:'쪽수',pattern:'positive',answer:'positive',explain:'두꺼운 책일수록 쪽수가 많은 경향이 있어 양의 상관관계가 보입니다.',clues:['x가 증가할수록 y도 증가하는 흐름이다.','오른쪽 위 방향으로 점들이 모인다.'],seed:64},
-  {title:'사건 08 · 해발고도와 기온',scene:'비슷한 시각에 여러 산지 관측소의 해발고도와 기온을 비교했다.',x:'해발고도',y:'기온',pattern:'negative',answer:'negative',explain:'이 자료에서는 해발고도가 높을수록 기온이 낮아지는 경향이 나타나 음의 상관관계입니다.',clues:['x가 커질수록 y는 작아지는 경향이다.','오른쪽 아래 방향의 흐름을 확인한다.'],seed:73},
-  {title:'사건 09 · 참가 번호와 점프 거리',scene:'학생들에게 무작위로 준 참가 번호와 제자리멀리뛰기 기록을 비교했다.',x:'참가 번호',y:'점프 거리',pattern:'none',answer:'none',explain:'참가 번호에 따라 점프 거리가 일정한 방향으로 변하지 않아 상관관계가 없습니다.',clues:['번호는 기록의 크기와 연결되지 않는다.','점들이 특정 방향 없이 흩어져 있다.'],seed:82},
-  {title:'사건 10 · 물을 받은 시간과 양',scene:'같은 세기의 수도꼭지에서 물을 받은 시간과 물의 양을 기록했다.',x:'받은 시간',y:'물의 양',pattern:'positive',answer:'positive',explain:'시간이 길수록 받은 물의 양이 많아지는 경향이므로 양의 상관관계입니다.',clues:['두 변수가 함께 증가한다.','점들의 흐름이 오른쪽 위를 향한다.'],seed:91},
-  {title:'사건 11 · 남은 거리와 이동 시간',scene:'같은 속도로 이동할 때 남은 거리와 도착까지 필요한 시간을 비교했다.',x:'남은 거리',y:'남은 이동 시간',pattern:'positive',answer:'positive',explain:'남은 거리가 길수록 필요한 시간도 길어지는 경향이 있어 양의 상관관계입니다.',clues:['x와 y가 같은 방향으로 움직인다.','점들의 전체 흐름을 본다.'],seed:103},
-  {title:'사건 12 · 좌석 번호와 반응 시간',scene:'임의로 정한 좌석 번호와 간단한 반응속도 검사 결과를 비교했다.',x:'좌석 번호',y:'반응 시간',pattern:'none',answer:'none',explain:'좌석 번호가 커져도 반응 시간이 일정하게 커지거나 작아지지 않아 상관관계가 없습니다.',clues:['번호 자체에는 크기 순서의 의미만 있을 뿐 능력과 연결되지 않는다.','점들이 한 방향으로 모이지 않는다.'],seed:114}
- ],
- normal:[
-  {title:'사건 21 · 수도꼭지 실험',scene:'같은 수도꼭지를 같은 세기로 틀어 놓고, 물을 받은 시간과 물의 양을 기록했다.',x:'물을 받은 시간',y:'물의 양',pattern:'positive',answer:'direct',explain:'다른 조건을 일정하게 두었으므로 물을 받는 시간이 길어지는 것이 물의 양 증가에 직접 연결됩니다.',clues:['수도꼭지의 세기는 일정했다.','시간만 바꾸어 물의 양을 측정했다.'],seed:121},
-  {title:'사건 22 · 아이스크림과 사고',scene:'여름 휴양지의 아이스크림 판매량과 물놀이 사고 건수를 날짜별로 비교했더니 함께 증가했다.',x:'아이스크림 판매량',y:'물놀이 사고',pattern:'positive',answer:'other',explain:'아이스크림 판매가 사고를 만든다고 보기보다 더운 날씨처럼 두 변수 모두에 영향을 주는 다른 요인을 먼저 의심하는 것이 타당합니다.',clues:['두 변수는 함께 늘지만 서로 직접 작용한다고 보기 어렵다.','더운 날에는 아이스크림 판매와 물놀이 활동이 모두 늘 수 있다.'],seed:132},
-  {title:'사건 23 · 화재 현장',scene:'화재 한 건마다 투입된 소방관 수와 재산 피해액을 비교하니 양의 상관관계가 나타났다.',x:'투입 소방관 수',y:'재산 피해액',pattern:'positive',answer:'other',explain:'소방관이 많아서 피해가 커졌다기보다 화재 규모가 클수록 투입 인원과 피해액이 함께 커질 수 있습니다.',clues:['소방관은 화재 발생 뒤 상황에 맞춰 투입된다.','두 값을 동시에 키울 수 있는 화재 자체의 특성을 생각한다.'],seed:143},
-  {title:'사건 24 · 스프링 실험',scene:'같은 스프링에 매단 추의 무게와 늘어난 길이를 일정 범위에서 측정했다.',x:'추의 무게',y:'늘어난 길이',pattern:'positive',answer:'direct',explain:'같은 스프링과 같은 조건에서 추의 무게를 변화시켰으므로 늘어난 길이와 직접적인 관계로 설명할 수 있습니다.',clues:['다른 조건을 일정하게 유지했다.','추의 무게를 바꾸며 늘어난 길이를 측정했다.'],seed:154},
-  {title:'사건 25 · 신발과 독서',scene:'초등학교 1~6학년 학생들의 신발 크기와 독서 점수를 모았더니 양의 상관관계가 나타났다.',x:'신발 크기',y:'독서 점수',pattern:'positive',answer:'other',explain:'신발 크기가 독서 능력을 높인다고 보기 어렵고, 나이가 들면서 신발 크기와 독서 능력이 함께 증가할 수 있습니다.',clues:['조사 대상의 학년이 서로 다르다.','성장과 학습 발달에 함께 영향을 주는 변수가 있다.'],seed:165},
-  {title:'사건 26 · 일정한 속도의 이동',scene:'같은 속도로 움직이는 카트의 이동 시간을 바꾸고 이동 거리를 측정했다.',x:'이동 시간',y:'이동 거리',pattern:'positive',answer:'direct',explain:'속도를 일정하게 유지한 실험이므로 이동 시간이 늘어나는 것이 이동 거리 증가에 직접 연결됩니다.',clues:['카트의 속도는 일정했다.','시간만 바꾸어 이동 거리를 측정했다.'],seed:176},
-  {title:'사건 27 · 선풍기와 냉면',scene:'여름철 날짜별 선풍기 판매량과 냉면 판매량을 비교했더니 함께 증가하는 경향이 나타났다.',x:'선풍기 판매량',y:'냉면 판매량',pattern:'positive',answer:'other',explain:'선풍기 판매가 냉면 판매를 직접 늘린다고 보기보다 높은 기온이 두 판매량을 함께 늘리는 요인일 수 있습니다.',clues:['두 상품은 서로를 직접 소비하게 만드는 관계가 약하다.','더운 날 두 상품의 수요가 모두 늘 수 있다.'],seed:187},
-  {title:'사건 28 · 참가 번호와 퍼즐',scene:'학생들에게 무작위로 부여한 참가 번호와 퍼즐 해결 시간을 비교했더니 약한 음의 상관이 나타났다.',x:'참가 번호',y:'퍼즐 해결 시간',pattern:'negative',answer:'other',explain:'참가 번호는 무작위로 정해져 퍼즐 해결 시간에 직접 영향을 주는 변수라고 보기 어렵습니다. 우연이나 다른 이유를 먼저 의심해야 합니다.',clues:['참가 번호는 무작위로 부여했다.','번호가 사고 능력을 변화시키는 과정은 없다.'],seed:198},
-  {title:'사건 29 · 전구 실험',scene:'같은 전구에서 전압을 안전한 범위 안에서 단계적으로 바꾸고 밝기를 측정했다.',x:'전압',y:'밝기',pattern:'positive',answer:'direct',explain:'같은 전구와 같은 환경에서 전압을 조절하며 밝기를 측정했으므로 직접적인 관계를 조사한 실험입니다.',clues:['같은 전구를 사용했다.','조작한 조건은 전압이었다.'],seed:209},
-  {title:'사건 30 · 모자 크기와 어휘력',scene:'유치원생부터 초등학생까지 여러 연령을 함께 조사했더니 머리둘레와 어휘 점수가 함께 증가하는 경향이 나타났다.',x:'머리둘레',y:'어휘 점수',pattern:'positive',answer:'other',explain:'머리둘레 자체가 어휘력을 높인다고 보기보다 나이와 발달 단계가 두 변수에 함께 영향을 줄 가능성을 먼저 살펴야 합니다.',clues:['서로 다른 연령의 학생들이 섞여 있다.','성장과 언어 발달에 동시에 영향을 주는 변수를 생각한다.'],seed:220},
-  {title:'사건 31 · 낙하 실험',scene:'같은 공을 같은 장소에서 서로 다른 높이에서 떨어뜨리고 낙하 시간을 측정했다.',x:'낙하 높이',y:'낙하 시간',pattern:'positive',answer:'direct',explain:'같은 조건에서 낙하 높이를 바꾸어 시간을 측정했으므로 높이 변화가 낙하 시간에 직접 영향을 주는 실험입니다.',clues:['같은 공과 같은 장소를 사용했다.','떨어뜨리는 높이만 바꾸었다.'],seed:231},
-  {title:'사건 32 · 도시의 두 기록',scene:'여러 도시에서 공원 수와 카페 수를 비교했더니 양의 상관관계가 나타났다.',x:'공원 수',y:'카페 수',pattern:'positive',answer:'other',explain:'공원이 많아서 카페가 많아진다고 단정하기보다 도시 인구나 도시 규모처럼 두 수치를 함께 키우는 다른 요인을 먼저 살펴야 합니다.',clues:['도시마다 전체 규모가 다르다.','큰 도시는 여러 시설의 수가 함께 많아질 수 있다.'],seed:242}
- ],
- hard:[
-  {title:'사건 41 · 여름의 두 기록',scene:'한 도시에서 날짜별 아이스크림 판매량과 물놀이 사고 건수가 강한 양의 상관관계를 보였다.',x:'아이스크림 판매량',y:'물놀이 사고',pattern:'positive',answer:'third',hidden:'기온',hiddenOptions:['기온','도서관 좌석 수','요일 이름','도로 표지판 수'],explain:'더운 날에는 아이스크림 판매와 물놀이 활동이 모두 늘 수 있습니다. 기온이 두 변수에 함께 영향을 주는 제3의 요인입니다.',clues:['두 변수 사이의 직접 작용은 설명하기 어렵다.','날씨가 더운 날 두 현상이 모두 증가한다.'],seed:251},
-  {title:'사건 42 · 신발과 독해',scene:'여러 학년 학생을 함께 조사했더니 신발 크기가 큰 학생일수록 독해 점수가 높은 경향이 나타났다.',x:'신발 크기',y:'독해 점수',pattern:'positive',answer:'third',hidden:'나이',hiddenOptions:['나이','책상 색깔','학생 번호','교실 층수'],explain:'나이가 증가하면서 신발 크기도 커지고 독해 능력도 발달할 수 있으므로 나이가 제3의 요인입니다.',clues:['조사 대상에 여러 학년이 섞여 있다.','성장과 학습 발달에 동시에 영향을 주는 변수를 찾아보자.'],seed:262},
-  {title:'사건 43 · 수도 실험',scene:'같은 유량의 수도꼭지에서 물을 받는 시간을 바꾸고 받은 물의 양을 측정했다.',x:'받은 시간',y:'물의 양',pattern:'positive',answer:'direct',explain:'유량을 일정하게 통제한 실험이므로 받은 시간이 길어지는 것이 물의 양 증가에 직접 연결됩니다.',clues:['유량을 같게 유지했다.','시간만 바꾸어 측정했다.'],seed:273},
-  {title:'사건 44 · 소방관 미스터리',scene:'여러 화재 현장에서 한 화재에 투입된 소방관 수와 피해액이 함께 증가하는 경향이 나타났다.',x:'투입 소방관 수',y:'피해액',pattern:'positive',answer:'third',hidden:'화재 규모',hiddenOptions:['화재 규모','소방차 색깔','신고자의 나이','건물 주소 숫자'],explain:'화재 규모가 클수록 많은 소방관이 필요하고 피해액도 커질 수 있으므로 화재 규모가 제3의 요인입니다.',clues:['소방관 수는 사고가 발생한 뒤 결정된다.','두 변수 모두를 크게 만드는 사건의 특성을 찾아보자.'],seed:284},
-  {title:'사건 45 · 수상한 번호표',scene:'12명의 학생에게 임의로 부여한 참가 번호와 퍼즐 해결 시간을 비교했더니 꽤 강한 음의 상관관계가 나왔다.',x:'임의 참가 번호',y:'퍼즐 해결 시간',pattern:'negative',answer:'chance',explain:'참가 번호는 임의로 부여되었고 해결 시간과 연결되는 기제가 없습니다. 표본이 작으면 우연히 상관이 나타날 수 있습니다.',clues:['참가 번호는 무작위로 부여했다.','두 변수 사이에 설명 가능한 연결 과정이 없다.'],seed:295},
-  {title:'사건 46 · 이동 실험',scene:'같은 길이의 복도를 여러 속도로 이동하면서 도착까지 걸린 시간을 측정했다.',x:'이동 속도',y:'걸린 시간',pattern:'negative',answer:'direct',explain:'이동 거리를 일정하게 유지한 실험이므로 속도가 빨라질수록 걸린 시간이 직접 줄어듭니다.',clues:['이동 거리는 항상 같았다.','속도를 바꾸면 도착 시간에 바로 영향을 준다.'],seed:306},
-  {title:'사건 47 · 선풍기와 냉면',scene:'여름철 한 지역에서 날짜별 선풍기 판매량과 냉면 판매량이 함께 늘어나는 경향이 나타났다.',x:'선풍기 판매량',y:'냉면 판매량',pattern:'positive',answer:'third',hidden:'기온',hiddenOptions:['기온','가게 간판 색','버스 번호','학교 교실 수'],explain:'기온이 높아지면 선풍기와 냉면의 수요가 모두 늘 수 있으므로 기온이 제3의 요인입니다.',clues:['두 상품이 서로의 판매를 직접 늘린다고 보기 어렵다.','더운 날 두 상품이 모두 더 잘 팔릴 수 있다.'],seed:317},
-  {title:'사건 48 · 무작위 좌석',scene:'10명의 학생에게 무작위 좌석 번호를 준 뒤 좌석 번호와 암산 속도를 비교했더니 양의 상관이 나타났다.',x:'무작위 좌석 번호',y:'암산 속도',pattern:'positive',answer:'chance',explain:'좌석 번호는 무작위로 정해졌고 암산 속도와 연결되는 기제가 없습니다. 적은 표본에서 우연히 나타난 상관으로 보는 것이 타당합니다.',clues:['좌석 번호는 무작위였다.','번호 자체가 암산 능력을 높이는 과정은 없다.'],seed:328},
-  {title:'사건 49 · 공부 시간과 시험 점수',scene:'한 학급에서 평소 공부 시간과 시험 점수 사이에 양의 상관관계가 나타났다. 공부 방법, 기초 실력, 학습 동기 등은 따로 조사하지 않았다.',x:'공부 시간',y:'시험 점수',pattern:'positive',answer:'uncertain',explain:'공부 시간이 점수에 영향을 줄 가능성은 있지만 기초 실력, 공부 방법, 동기 등 다른 요인도 있고 관찰 자료만으로 방향과 원인을 확정하기 어렵습니다.',clues:['두 변수 사이에 가능한 인과 경로는 있다.','하지만 다른 중요한 요인들을 통제하거나 조사하지 않았다.'],seed:339},
-  {title:'사건 50 · 스마트폰과 수면',scene:'학생들의 스마트폰 사용 시간과 수면 시간을 조사했더니 음의 상관관계가 나타났다. 사용 시각과 생활 습관은 조사하지 않았다.',x:'스마트폰 사용 시간',y:'수면 시간',pattern:'negative',answer:'uncertain',explain:'스마트폰 사용이 수면을 줄일 수도 있지만 잠이 오지 않아 스마트폰을 오래 사용할 수도 있고 생활 습관 같은 다른 요인도 있어 현재 정보만으로 인과를 확정하기 어렵습니다.',clues:['A가 B에 영향을 줄 수도 있고 B가 A와 관련될 수도 있다.','생활 습관 등 조사하지 않은 요인이 남아 있다.'],seed:350},
-  {title:'사건 51 · 광고비와 판매량',scene:'여러 상품의 광고비와 판매량을 비교했더니 양의 상관관계가 나타났다. 상품 인지도와 예상 수요는 조사하지 않았다.',x:'광고비',y:'판매량',pattern:'positive',answer:'uncertain',explain:'광고가 판매를 늘릴 수 있지만 잘 팔릴 것으로 예상되는 상품에 광고비를 더 쓸 수도 있고 상품 인지도 같은 다른 요인도 있어 현재 자료만으로 원인을 확정하기 어렵습니다.',clues:['광고가 판매에 영향을 줄 가능성은 있다.','반대로 판매가 기대되는 상품에 광고비를 더 쓰는 결정도 가능하다.'],seed:361},
-  {title:'사건 52 · 빛과 태양전지',scene:'같은 태양전지에 비추는 빛의 세기를 단계적으로 바꾸고 발생 전류를 측정했다.',x:'빛의 세기',y:'발생 전류',pattern:'positive',answer:'direct',explain:'같은 태양전지에서 다른 조건을 일정하게 두고 빛의 세기를 조절한 실험이므로 직접적인 영향 관계를 조사한 것입니다.',clues:['같은 태양전지를 사용했다.','조작한 변수는 빛의 세기였다.'],seed:372}
- ]
-};
+// Google Apps Script 웹앱 주소를 아래에 넣으면 모든 학생 응답이 연결된 Google Sheet에 저장됩니다.
+// 예: const API_URL = "https://script.google.com/macros/s/...../exec";
+const API_URL = "PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+const API_CONNECTED = API_URL.startsWith("https://script.google.com/macros/s/");
 
-let level='easy', deck=[], idx=0, score=0, hints=0, attempts=0, mistakes=0, solved=false, records=[];
-const levelNames={easy:'초급 · 관계 포착',normal:'중급 · 원인 의심',hard:'고급 · 숨은 변수 추적'};
-function shuffled(a){return [...a].sort(()=>Math.random()-.5)}
-function startGame(lv){level=lv;deck=shuffled(cases[lv]).slice(0,5);idx=0;score=0;records=[];show('gameScreen');loadCase()}
+const STANCES = [
+  ["direct","두 변수 사이의 직접적인 영향이 중요해 보인다"],
+  ["third","제3의 요인이 두 변수 모두에 영향을 줄 가능성이 크다"],
+  ["reverse","반대 방향의 영향(역인과)도 생각할 수 있다"],
+  ["multiple","여러 원인이 함께 작용했을 가능성이 크다"],
+  ["uncertain","현재 자료만으로는 인과관계를 판단하기 어렵다"]
+];
+
+// 일부러 한 가지 정답으로 단정하기 어려운 주제 10개
+const CASES = [
+  {id:"C01",title:"사건 01 · 공부 시간과 시험 성적",scene:"한 학급에서 학생들의 평소 공부 시간과 시험 성적 사이에 뚜렷한 양의 상관관계가 나타났다. 공부 방법, 기초 실력, 학습 동기, 사교육 여부 등은 따로 조사하지 않았다.",x:"공부 시간",y:"시험 성적",pattern:"positive",seed:101},
+  {id:"C02",title:"사건 02 · 스마트폰과 수면",scene:"학생들의 하루 스마트폰 사용 시간과 수면 시간을 조사했더니 음의 상관관계가 나타났다. 스마트폰을 사용하는 시간대와 개인별 생활 습관은 조사하지 않았다.",x:"스마트폰 사용 시간",y:"수면 시간",pattern:"negative",seed:113},
+  {id:"C03",title:"사건 03 · 광고비와 판매량",scene:"여러 상품의 한 달 광고비와 판매량을 비교했더니 양의 상관관계가 나타났다. 상품 인지도, 원래의 예상 수요, 가격 할인 여부는 조사하지 않았다.",x:"광고비",y:"판매량",pattern:"positive",seed:127},
+  {id:"C04",title:"사건 04 · 독서 시간과 어휘력",scene:"학생들의 일주일 평균 독서 시간과 어휘력 검사 점수 사이에 양의 상관관계가 나타났다. 평소 언어 능력과 가정의 독서 환경은 별도로 조사하지 않았다.",x:"독서 시간",y:"어휘력 점수",pattern:"positive",seed:139},
+  {id:"C05",title:"사건 05 · 학원 수강 시간과 성적",scene:"학생들의 주당 학원 수강 시간과 수학 성적을 조사했더니 양의 상관관계가 나타났다. 학생의 기존 성취도, 가정환경, 학습 의지 등은 조사하지 않았다.",x:"학원 수강 시간",y:"수학 성적",pattern:"positive",seed:151},
+  {id:"C06",title:"사건 06 · 게임 시간과 학업 성취",scene:"학생들의 하루 게임 시간과 학업 성취도 사이에 음의 상관관계가 나타났다. 수면 시간, 공부 시간, 스트레스 수준과 같은 변수는 함께 조사하지 않았다.",x:"게임 시간",y:"학업 성취도",pattern:"negative",seed:163},
+  {id:"C07",title:"사건 07 · 통학 시간과 지각 횟수",scene:"한 학교 학생들의 평균 통학 시간과 한 학기 지각 횟수 사이에 양의 상관관계가 나타났다. 교통수단, 출발 시각, 교통 혼잡 정도는 따로 기록하지 않았다.",x:"통학 시간",y:"지각 횟수",pattern:"positive",seed:179},
+  {id:"C08",title:"사건 08 · 운동 시간과 스트레스",scene:"학생들의 주당 운동 시간과 스트레스 검사 점수 사이에 음의 상관관계가 나타났다. 원래 스트레스가 적은 학생이 운동을 더 즐기는지, 다른 생활 습관이 있는지는 조사하지 않았다.",x:"운동 시간",y:"스트레스 점수",pattern:"negative",seed:193},
+  {id:"C09",title:"사건 09 · 도서관 이용과 성적",scene:"학교 도서관 이용 횟수가 많은 학생일수록 평균 시험 성적이 높은 경향이 나타났다. 도서관에서 실제로 무엇을 했는지와 학생의 원래 학습 태도는 조사하지 않았다.",x:"도서관 이용 횟수",y:"평균 시험 성적",pattern:"positive",seed:211},
+  {id:"C10",title:"사건 10 · 결석일수와 성적",scene:"한 학년에서 결석일수가 많은 학생일수록 시험 성적이 낮은 경향이 나타났다. 결석 이유, 건강 상태, 학습 환경 등은 별도로 조사하지 않았다.",x:"결석일수",y:"시험 성적",pattern:"negative",seed:227}
+];
+
+let idx=0, submitted=0, selectedStance="", identity={}, records=[];
+
+window.addEventListener('DOMContentLoaded',()=>{
+  if(!API_CONNECTED) document.getElementById('setupWarning').style.display='block';
+});
+
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function restart(){show('startScreen');document.getElementById('levelBadge').textContent='난이도 선택';document.getElementById('progressBadge').textContent='사건 0 / 5';document.getElementById('scoreBadge').textContent='탐정 점수 0'}
-function loadCase(){const c=deck[idx];hints=0;attempts=0;mistakes=0;solved=false;document.getElementById('levelBadge').textContent=levelNames[level];document.getElementById('progressBadge').textContent=`사건 ${idx+1} / ${deck.length}`;document.getElementById('scoreBadge').textContent=`탐정 점수 ${score}`;document.getElementById('caseTitle').textContent=c.title;document.getElementById('caseScene').textContent=c.scene;document.getElementById('varX').textContent=`X · ${c.x}`;document.getElementById('varY').textContent=`Y · ${c.y}`;document.getElementById('feedback').className='feedback';document.getElementById('feedback').textContent='';document.getElementById('hiddenBox').style.display='none';document.getElementById('nextBtn').style.display='none';document.getElementById('hintBtn').style.display='inline-block';drawPlot(c);renderClues(c);renderQuestion(c)}
-function renderQuestion(c){const grid=document.getElementById('choiceGrid');grid.innerHTML='';let q,opts;if(level==='easy'){q='이 산점도에서 어떤 상관관계가 보일까?';opts=[['positive','양의 상관관계'],['negative','음의 상관관계'],['none','상관관계 없음']]}else if(level==='normal'){q='이 상관관계를 두 변수의 직접적인 관련으로 설명해도 될까?';opts=[['direct','직접적인 관련으로 설명 가능'],['other','다른 요인을 먼저 의심해야 함']]}else{q='현재 단서로 가장 타당한 해석은 무엇일까?';opts=[['direct','직접적인 영향이 있다고 볼 근거가 충분함'],['third','제3의 요인이 두 변수에 함께 영향을 줌'],['chance','우연히 나타난 상관일 가능성이 큼'],['uncertain','현재 정보만으로는 인과관계를 판단하기 어려움']]}document.getElementById('questionText').textContent=q;opts.forEach(([v,t])=>{const b=document.createElement('button');b.className='choice';b.textContent=t;b.onclick=()=>answer(v,b);grid.appendChild(b)})}
-function renderClues(c){const list=document.getElementById('clueList');list.innerHTML='';c.clues.forEach((t,i)=>{const d=document.createElement('div');d.className='clue locked';d.dataset.i=i;d.textContent=t;list.appendChild(d)})}
-function openHint(){const c=deck[idx];if(solved)return;const nodes=[...document.querySelectorAll('.clue.locked')];if(!nodes.length){document.getElementById('hintBtn').style.display='none';return}nodes[0].classList.remove('locked');hints++;score=Math.max(0,score-10);document.getElementById('scoreBadge').textContent=`탐정 점수 ${score}`;if(hints>=c.clues.length)document.getElementById('hintBtn').style.display='none'}
-function answer(v,btn){if(solved)return;attempts++;const c=deck[idx];if(v===c.answer){btn.classList.add('correct');if(level==='hard'&&v==='third'&&c.hidden){document.querySelectorAll('.choice').forEach(x=>x.disabled=true);renderHidden(c);return}finishCorrect(c)}else{mistakes++;btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),450);const f=document.getElementById('feedback');f.className='feedback bad';f.textContent='아직 사건이 해결되지 않았습니다. 산점도뿐 아니라 두 변수 사이에 실제로 어떤 과정이 가능한지도 생각해 보세요.'}}
-function renderHidden(c){const box=document.getElementById('hiddenBox'),grid=document.getElementById('hiddenGrid');box.style.display='block';grid.innerHTML='';shuffled(c.hiddenOptions).forEach(t=>{const b=document.createElement('button');b.className='hidden-choice';b.textContent=t;b.onclick=()=>{attempts++;if(t===c.hidden){b.style.background='#dff3e9';b.style.borderColor='#4d947b';finishCorrect(c)}else{mistakes++;b.style.background='#f8dede';b.style.borderColor='#c86969';setTimeout(()=>{b.style.background='white';b.style.borderColor='#9aa9be'},450)}};grid.appendChild(b)})}
-function finishCorrect(c){solved=true;let gained=100+(mistakes===0?20:0);score+=gained;document.getElementById('scoreBadge').textContent=`탐정 점수 ${score}`;document.querySelectorAll('.choice,.hidden-choice').forEach(x=>x.disabled=true);document.getElementById('hintBtn').style.display='none';const f=document.getElementById('feedback');f.className='feedback good';f.innerHTML=`✅ 사건 해결! +${gained}점<br>${c.explain}<br><span style="font-weight:normal">※ 상관관계만으로 인과관계를 확정할 수는 없으며, 맥락과 추가 근거를 함께 살펴야 합니다.</span>`;records.push({title:c.title,hints,attempts});document.getElementById('nextBtn').style.display='block';document.getElementById('nextBtn').textContent=idx===deck.length-1?'수사 결과 보기 ▶':'다음 사건 ▶'}
-function nextCase(){idx++;if(idx>=deck.length){finishGame();return}loadCase()}
-function finishGame(){show('resultScreen');document.getElementById('levelBadge').textContent=levelNames[level];document.getElementById('progressBadge').textContent=`사건 ${deck.length} / ${deck.length}`;document.getElementById('finalScore').textContent=`${score}점`;let line=score>=540?'관계와 원인을 매우 신중하게 구별하는 명탐정입니다.':score>=450?'좋은 추리입니다. 숨은 변수를 찾는 습관을 계속 유지해 보세요.':'산점도의 방향뿐 아니라 “왜 함께 변하는가?”를 한 번 더 생각해 보세요.';document.getElementById('resultLine').textContent=line;document.getElementById('resultList').innerHTML=records.map((r,i)=>`<div>📁 ${i+1}. ${r.title.replace(/사건 \d+ · /,'')} · 단서 ${r.hints}개 사용 · 시도 ${r.attempts}회</div>`).join('')}
+function beginActivity(){
+  const cls=document.getElementById('classInput').value.trim();
+  const num=document.getElementById('numberInput').value.trim();
+  const nick=document.getElementById('nickInput').value.trim();
+  if(!cls||!num||!nick){alert('반, 번호, 닉네임(또는 이름)을 모두 입력해 주세요.');return;}
+  identity={cls,num,nick}; idx=0;submitted=0;records=[]; show('caseScreen'); loadCase();
+}
+function loadCase(){
+  const c=CASES[idx]; selectedStance="";
+  document.getElementById('progressBadge').textContent=`사건 ${idx+1} / ${CASES.length}`;
+  document.getElementById('submitBadge').textContent=`제출 ${submitted} / ${CASES.length}`;
+  document.getElementById('caseTitle').textContent=c.title;
+  document.getElementById('caseScene').textContent=c.scene;
+  document.getElementById('varX').textContent=`X · ${c.x}`;
+  document.getElementById('varY').textContent=`Y · ${c.y}`;
+  document.getElementById('reasonInput').value='';
+  document.getElementById('hiddenInput').value='';
+  document.getElementById('statusText').className='status';
+  document.getElementById('statusText').textContent='판단과 이유를 작성하세요.';
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('nextBtn').style.display='none';
+  document.getElementById('shareBox').style.display='none';
+  renderStances(); drawPlot(c);
+}
+function renderStances(){
+  const g=document.getElementById('stanceGrid');g.innerHTML='';
+  STANCES.forEach(([v,t])=>{const b=document.createElement('button');b.className='stance';b.textContent=t;b.onclick=()=>{selectedStance=v;document.querySelectorAll('.stance').forEach(x=>x.classList.remove('selected'));b.classList.add('selected')};g.appendChild(b)});
+}
+async function submitCurrent(){
+  const c=CASES[idx]; const reason=document.getElementById('reasonInput').value.trim(); const hidden=document.getElementById('hiddenInput').value.trim();
+  if(!selectedStance){alert('먼저 자신의 판단을 하나 선택해 주세요.');return;}
+  if(reason.length<10){alert('이유를 조금 더 구체적으로 적어 주세요. (10자 이상)');return;}
+  const stanceText=(STANCES.find(x=>x[0]===selectedStance)||['',''])[1];
+  const payload={type:'student_response',class:identity.cls,number:identity.num,nickname:identity.nick,caseId:c.id,caseTitle:c.title,stance:selectedStance,stanceText,reason,hiddenFactor:hidden};
+  document.getElementById('submitBtn').disabled=true;
+  const status=document.getElementById('statusText');status.className='status warn';status.textContent='제출 중...';
+  try{
+    if(API_CONNECTED){
+      await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    }else{
+      const local=JSON.parse(localStorage.getItem('correlation_local_responses')||'[]');local.push({...payload,timestamp:new Date().toISOString()});localStorage.setItem('correlation_local_responses',JSON.stringify(local));
+    }
+    records.push({title:c.title,stance:stanceText,reason}); submitted++;
+    document.getElementById('submitBadge').textContent=`제출 ${submitted} / ${CASES.length}`;
+    status.className='status ok';status.textContent='✓ 추리가 제출되었습니다.';
+    document.querySelectorAll('.stance').forEach(x=>x.disabled=true);document.getElementById('reasonInput').disabled=true;document.getElementById('hiddenInput').disabled=true;
+    loadShared(c.id);
+    document.getElementById('nextBtn').style.display='inline-block';document.getElementById('nextBtn').textContent=idx===CASES.length-1?'활동 마무리 ▶':'다음 사건 ▶';
+  }catch(e){status.className='status warn';status.textContent='제출에 실패했습니다. 잠시 후 다시 시도해 주세요.';document.getElementById('submitBtn').disabled=false;}
+}
+function nextCase(){
+  document.getElementById('reasonInput').disabled=false;document.getElementById('hiddenInput').disabled=false;
+  idx++; if(idx>=CASES.length){finish();return;} loadCase();
+}
+function finish(){
+  show('resultScreen');document.getElementById('progressBadge').textContent=`사건 ${CASES.length} / ${CASES.length}`;document.getElementById('submitBadge').textContent=`제출 ${submitted} / ${CASES.length}`;
+  document.getElementById('savedList').innerHTML=records.map((r,i)=>`<div><b>${i+1}. ${escapeHtml(r.title.replace(/사건 \d+ · /,''))}</b><br>${escapeHtml(r.stance)}<br><span style="color:#666">${escapeHtml(r.reason)}</span></div>`).join('');
+}
+function restartActivity(){location.reload()}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+
+// 교사가 Google Sheet에서 '공개' 열을 TRUE로 바꾼 답변만 학생에게 보입니다.
+function loadShared(caseId){
+  const box=document.getElementById('shareBox'),list=document.getElementById('sharedList');list.innerHTML='';
+  if(!API_CONNECTED){box.style.display='none';return;}
+  const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+  window[cb]=function(data){
+    try{
+      const rows=(data&&data.responses)||[];
+      if(rows.length){box.style.display='block';list.innerHTML=rows.slice(0,6).map(r=>`<div class="shared-item"><b>${escapeHtml(r.stanceText||'다른 의견')}</b><br>${escapeHtml(r.reason||'')}${r.hiddenFactor?`<br><span style="color:#657">의심한 요인: ${escapeHtml(r.hiddenFactor)}</span>`:''}</div>`).join('')}
+      else box.style.display='none';
+    }finally{delete window[cb];script.remove();}
+  };
+  const script=document.createElement('script');script.src=`${API_URL}?action=public&caseId=${encodeURIComponent(caseId)}&callback=${encodeURIComponent(cb)}`;script.onerror=()=>{delete window[cb];script.remove();};document.body.appendChild(script);
+}
 function rand(seed){let x=Math.sin(seed)*10000;return x-Math.floor(x)}
-function makePoints(pattern,seed){const pts=[];for(let i=0;i<16;i++){let x=8+i*5.6+rand(seed+i)*4,y;if(pattern==='positive')y=15+x*.72+(rand(seed*3+i)-.5)*24;else if(pattern==='negative')y=88-x*.68+(rand(seed*4+i)-.5)*24;else y=12+rand(seed*5+i)*76;y=Math.max(7,Math.min(93,y));pts.push([x,y])}return pts}
+function makePoints(pattern,seed){const pts=[];for(let i=0;i<16;i++){let x=8+i*5.6+rand(seed+i)*4,y;if(pattern==='positive')y=16+x*.68+(rand(seed*3+i)-.5)*27;else if(pattern==='negative')y=87-x*.65+(rand(seed*4+i)-.5)*27;else y=12+rand(seed*5+i)*76;y=Math.max(7,Math.min(93,y));pts.push([x,y])}return pts}
 function drawPlot(c){const svg=document.getElementById('plot'),NS='http://www.w3.org/2000/svg';svg.innerHTML='';const mk=(n,a)=>{const e=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));svg.appendChild(e);return e};mk('rect',{x:48,y:20,width:425,height:245,fill:'#fffdf8',stroke:'#c7b28f','stroke-width':1});for(let i=0;i<=5;i++){const y=20+i*49;mk('line',{x1:48,y1:y,x2:473,y2:y,stroke:'#e8dfd1','stroke-width':1});const x=48+i*85;mk('line',{x1:x,y1:20,x2:x,y2:265,stroke:'#e8dfd1','stroke-width':1})}mk('line',{x1:48,y1:265,x2:473,y2:265,stroke:'#55483e','stroke-width':2});mk('line',{x1:48,y1:20,x2:48,y2:265,stroke:'#55483e','stroke-width':2});makePoints(c.pattern,c.seed).forEach(([px,py])=>mk('circle',{cx:48+px*4.25,cy:265-py*2.45,r:5.3,class:'dot'}));const tx=mk('text',{x:260,y:302,'text-anchor':'middle',class:'axis-label'});tx.textContent=c.x;const ty=mk('text',{x:15,y:145,'text-anchor':'middle',class:'axis-label',transform:'rotate(-90 15 145)'});ty.textContent=c.y}
 </script>
 </body>
