@@ -3,36 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>데이터 탐정: 나의 추리를 제출하라</title>
+<title>데이터 탐정: 상관관계를 추리하라</title>
 <style>
 :root{
-  --ink:#2d3136; --paper:#fffaf1; --paper2:#f3e6cf; --brown:#72543c; --line:#b99b73;
-  --mint:#d7f1e8; --pink:#f8d8e6; --sky:#dcecff; --gold:#e2b84e; --blue:#4f7da5; --green:#4d8b73;
+  --ink:#2d3136; --paper:#fffaf1; --brown:#72543c; --line:#b99b73;
+  --mint:#d7f1e8; --pink:#f8d8e6; --sky:#dcecff; --gold:#e2b84e; --blue:#4f7da5;
 }
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:'Malgun Gothic',sans-serif;color:var(--ink);background:
-  radial-gradient(circle at 10% 12%,rgba(215,241,232,.98),transparent 28%),
-  radial-gradient(circle at 88% 14%,rgba(248,216,230,.95),transparent 28%),
-  linear-gradient(135deg,#dcecff 0%,#f8e5ee 48%,#dff3ea 100%);padding:18px;text-align:center}
+body{
+  margin:0;min-height:100vh;font-family:'Malgun Gothic',sans-serif;color:var(--ink);
+  background:
+    radial-gradient(circle at 10% 12%,rgba(215,241,232,.98),transparent 28%),
+    radial-gradient(circle at 88% 14%,rgba(248,216,230,.95),transparent 28%),
+    linear-gradient(135deg,#dcecff 0%,#f8e5ee 48%,#dff3ea 100%);
+  padding:18px;text-align:center
+}
 .wrap{max-width:1050px;margin:auto;background:rgba(255,250,241,.97);border:2px solid #a88a64;border-radius:22px;box-shadow:0 18px 42px rgba(66,49,38,.23);overflow:hidden}
-header{padding:20px 24px 14px;background:linear-gradient(180deg,#fff7df,#f2e2bd);border-bottom:2px dashed #b59569}
-h1{margin:0;color:#513927;font-size:30px}.subtitle{margin:8px 0 0;color:#6d5948;font-weight:bold;line-height:1.55}
-.topbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 20px;background:#ecdfc7;border-bottom:1px solid #cfb58f;font-weight:bold}.badge{background:#fffaf1;border:1px solid #b99b73;border-radius:999px;padding:7px 12px}
-.screen{display:none;padding:24px}.screen.active{display:block}
-.intro{max-width:790px;margin:0 auto 20px;background:#fffdf7;border:2px solid #c9ad84;border-radius:16px;padding:18px 20px;text-align:left;line-height:1.8;box-shadow:0 7px 16px rgba(76,56,40,.10)}
-.identity{max-width:760px;margin:18px auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.identity input{width:100%;padding:12px 13px;border-radius:10px;border:1px solid #bca078;background:#fff;font-size:16px;text-align:center}
-.primary,.secondary,.back{border:0;border-radius:11px;padding:13px 22px;font-size:17px;font-weight:900;cursor:pointer}.primary{background:#4f7da5;color:#fff}.secondary{background:#dfb44a;color:#3d2e14}.back{background:#7d6857;color:white}.primary:hover,.secondary:hover,.back:hover{filter:brightness(1.04);transform:translateY(-1px)}
-.case-grid{display:grid;grid-template-columns:1.03fr .97fr;gap:20px;align-items:start}.card{background:#fffdf7;border:2px solid #c3a57d;border-radius:18px;padding:18px;text-align:left;box-shadow:0 7px 17px rgba(78,57,40,.12)}
-.case-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px dashed #ceb38d}.case-head h2{margin:0;color:#533b2a;font-size:23px}.stamp{border:3px solid #a34b4b;color:#a34b4b;border-radius:5px;padding:4px 8px;font-weight:900;transform:rotate(-4deg)}
-.scene{margin-top:13px;background:#f6ead4;border-radius:12px;padding:15px;line-height:1.75}.vars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0}.var{background:#eaf5f2;border:1px solid #afd0c6;border-radius:11px;padding:11px;text-align:center;font-weight:bold}
-.chart-wrap{background:#fff;border:1px solid #d2bea0;border-radius:12px;padding:8px}#plot{width:100%;height:315px;display:block}.axis-label{font-size:12px;fill:#5b5148}.dot{fill:#4f7da5;stroke:#fff;stroke-width:1.7;opacity:.92}
-.question{font-size:19px;font-weight:900;color:#4b3424;margin:0 0 11px}.stance-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stance{padding:12px;border:2px solid #baa17d;border-radius:11px;background:#fffaf0;color:#3f362f;font-weight:bold;font-size:15px;cursor:pointer;line-height:1.35}.stance:hover{background:#f3e6ce}.stance.selected{background:#ddecff;border-color:#4f7da5;box-shadow:0 0 0 2px rgba(79,125,165,.12)}
-.label{display:block;margin:15px 0 6px;font-weight:900;color:#5a4230}.reason,.hidden-input{width:100%;border:1px solid #bca17c;border-radius:11px;background:#fff;padding:12px 13px;font-family:inherit;font-size:16px;line-height:1.55}.reason{min-height:140px;resize:vertical}.hidden-input{min-height:48px}
-.note{margin:12px 0 0;background:#fff4c9;border:1px dashed #b99845;border-radius:10px;padding:10px 12px;line-height:1.55;font-size:14px}.actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}.status{font-weight:bold;color:#5d554c}.status.ok{color:#39745e}.status.warn{color:#a36a2e}
-.share-box{display:none;margin-top:16px;background:#eef4fb;border:1px solid #aebfd2;border-radius:12px;padding:14px}.share-box h3{margin:0 0 8px}.shared-list{display:flex;flex-direction:column;gap:9px}.shared-item{background:white;border-radius:10px;border:1px solid #cbd6e2;padding:10px 12px;line-height:1.55}.shared-item b{color:#4f6d8a}
-.result{max-width:720px;margin:0 auto;background:#fffdf7;border:2px solid #c3a57d;border-radius:20px;padding:28px;box-shadow:0 10px 24px rgba(78,57,40,.13)}.result h2{font-size:30px;color:#533b2a}.summary{margin:18px auto;background:#f5ead8;border-radius:12px;padding:16px;text-align:left;line-height:1.8}.saved-list{max-height:320px;overflow:auto;text-align:left;background:#fff;border:1px solid #dbc9ad;border-radius:12px;padding:12px}.saved-list div{padding:8px 6px;border-bottom:1px dashed #ddd}.saved-list div:last-child{border-bottom:0}
-.setup-warning{display:none;max-width:820px;margin:0 auto 14px;background:#fff1d7;border:1px solid #d5a95b;border-radius:12px;padding:10px 14px;color:#7b5420;font-weight:bold;line-height:1.55}
-@media(max-width:820px){.case-grid{grid-template-columns:1fr}.identity{grid-template-columns:1fr}.stance-grid{grid-template-columns:1fr}#plot{height:270px}h1{font-size:25px}.screen{padding:16px}}
+header{padding:22px 24px 16px;background:linear-gradient(180deg,#fff7df,#f2e2bd);border-bottom:2px dashed #b59569}
+h1{margin:0;color:#513927;font-size:30px}.subtitle{margin:9px 0 0;color:#6d5948;font-weight:bold;line-height:1.65}
+.content{padding:24px}.intro{max-width:860px;margin:0 auto 20px;background:#fffdf7;border:2px solid #c9ad84;border-radius:16px;padding:18px 20px;text-align:left;line-height:1.8;box-shadow:0 7px 16px rgba(76,56,40,.10)}
+.case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:930px;margin:0 auto 22px}
+.case-card{background:#fffdf7;border:2px solid #c3a57d;border-radius:18px;padding:17px;text-align:left;box-shadow:0 7px 17px rgba(78,57,40,.11)}
+.case-card:last-child{grid-column:1/-1;max-width:455px;width:100%;justify-self:center}
+.case-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:2px dashed #d1b894}
+.case-no{font-size:13px;font-weight:900;color:#73583f;background:#f2e3c9;padding:5px 9px;border-radius:999px}.corr{font-size:13px;font-weight:900;padding:5px 9px;border-radius:999px}.corr.pos{background:#d7f1e8;color:#2f745d}.corr.neg{background:#f8d8e6;color:#9c4264}
+.case-card h2{font-size:20px;margin:13px 0 8px;color:#513927}.case-card p{margin:0;line-height:1.65;color:#544a42}
+.vars{margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}.var{background:#edf6f3;border:1px solid #b6d5ca;border-radius:10px;padding:8px 10px;font-weight:800}.arrow{font-weight:900;color:#7d6857}
+.guide{max-width:880px;margin:0 auto 22px;background:#eef4fb;border:1px solid #aebfd2;border-radius:14px;padding:16px 18px;text-align:left;line-height:1.7}.guide b{color:#375f84}
+.form-area{max-width:760px;margin:0 auto;background:linear-gradient(135deg,#fff4cc,#ffe7ef);border:2px solid #dfbd71;border-radius:18px;padding:22px 18px}.form-area h2{margin:0 0 8px;color:#563f29}.form-area p{margin:0 0 16px;line-height:1.65;color:#655746}
+.primary,.back{border:0;border-radius:12px;padding:14px 24px;font-size:17px;font-weight:900;cursor:pointer;transition:.15s}.primary{background:#4f7da5;color:#fff;box-shadow:0 5px 12px rgba(79,125,165,.25)}.back{background:#7d6857;color:white;margin-top:12px}.primary:hover,.back:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.small{margin-top:10px;font-size:13px;color:#786a5f}
+@media(max-width:760px){.case-grid{grid-template-columns:1fr}.case-card:last-child{grid-column:auto;max-width:none}.content{padding:16px}h1{font-size:25px}}
 </style>
 <script>
 (async function checkCorrelationAuth(){
@@ -52,186 +53,76 @@ h1{margin:0;color:#513927;font-size:30px}.subtitle{margin:8px 0 0;color:#6d5948;
 </head>
 <body>
 <div class="wrap">
-<header>
-  <h1>🔎 데이터 탐정: 나의 추리를 제출하라</h1>
-  <p class="subtitle">상관관계에는 하나의 정답만 있는 경우가 많지 않습니다.<br>자료를 보고 자신의 판단을 정한 뒤, <b>왜 그렇게 생각했는지 근거를 적어 보세요.</b></p>
-</header>
-<div class="topbar"><span class="badge" id="progressBadge">사건 0 / 10</span><span class="badge" id="submitBadge">제출 0 / 10</span><span class="badge">정답 맞히기보다 근거 설명하기</span></div>
+  <header>
+    <h1>🔎 데이터 탐정: 상관관계를 추리하라</h1>
+    <p class="subtitle">두 변수 사이에 상관관계가 보인다고 해서 곧바로 원인과 결과라고 단정할 수 있을까요?<br>다섯 가지 사례를 살펴보고, 가장 타당하다고 생각하는 설명과 그 근거를 정해 보세요.</p>
+  </header>
 
-<section id="startScreen" class="screen active">
-  <div id="setupWarning" class="setup-warning">⚠ 아직 Google Apps Script 주소가 연결되지 않았습니다. 지금은 이 기기 브라우저에만 임시 저장됩니다.</div>
-  <div class="intro">
-    <b>🗂 활동 방법</b><br>
-    ① 두 변수의 산점도와 상황을 읽습니다.<br>
-    ② 가장 타당하다고 생각하는 해석을 하나 선택합니다.<br>
-    ③ <b>그렇게 판단한 이유</b>를 자신의 말로 씁니다.<br>
-    ④ 필요하다면 두 변수에 함께 영향을 줄 수 있는 <b>숨은 요인</b>도 적습니다.<br><br>
-    <b>중요:</b> 이 활동은 자동 채점하지 않습니다. 같은 자료를 보고도 다른 설명이 나올 수 있으며, 핵심은 근거의 타당성을 비교하는 것입니다.
-  </div>
-  <div class="identity">
-    <input id="classInput" placeholder="반 (예: 3-2)" maxlength="12">
-    <input id="numberInput" placeholder="번호 (예: 17)" maxlength="12">
-    <input id="nickInput" placeholder="닉네임 또는 이름" maxlength="20">
-  </div>
-  <button class="primary" onclick="beginActivity()">활동 시작 ▶</button>
-  <br><button class="back" style="margin-top:12px" onclick="location.href='stat.html'">⬅ 통계 콘텐츠로 돌아가기</button>
-</section>
+  <main class="content">
+    <div class="intro">
+      <b>🗂 활동 방법</b><br>
+      ① 아래 5개의 사례를 차례로 읽습니다.<br>
+      ② 각 상관관계가 왜 나타났는지 자신의 생각을 정합니다.<br>
+      ③ 모든 사례를 읽은 뒤 <b>「내 생각 제출하기」</b>를 눌러 Google Form에서 답과 이유를 작성합니다.<br><br>
+      <b>중요:</b> 이 활동은 정답을 맞히는 활동이 아닙니다. 같은 자료를 보고도 서로 다른 설명이 가능하며, 핵심은 <b>자신의 판단을 근거 있게 설명하는 것</b>입니다.
+    </div>
 
-<section id="caseScreen" class="screen">
- <div class="case-grid">
-  <div class="card">
-    <div class="case-head"><h2 id="caseTitle">사건 파일</h2><span class="stamp">CASE FILE</span></div>
-    <div class="scene" id="caseScene"></div>
-    <div class="vars"><div class="var" id="varX"></div><div class="var" id="varY"></div></div>
-    <div class="chart-wrap"><svg id="plot" viewBox="0 0 500 315" aria-label="산점도"></svg></div>
-  </div>
-  <div class="card">
-    <div class="question">현재 자료를 보고 가장 타당하다고 생각하는 해석은?</div>
-    <div id="stanceGrid" class="stance-grid"></div>
-    <label class="label" for="reasonInput">왜 그렇게 생각했나요?</label>
-    <textarea id="reasonInput" class="reason" placeholder="예: 공부 시간이 늘면 연습량이 늘어 점수에 영향을 줄 수 있지만, 원래 학습동기가 높은 학생이 공부도 오래 했을 가능성도 있다."></textarea>
-    <label class="label" for="hiddenInput">함께 영향을 줄 수 있는 다른 요인이 있다면? <span style="font-weight:normal">(선택)</span></label>
-    <input id="hiddenInput" class="hidden-input" placeholder="예: 학습동기, 기초실력, 생활습관 등">
-    <div class="note">💡 ‘정답처럼 보이는 문장’을 찾기보다 <b>다른 설명 가능성</b>이 있는지도 생각해 보세요.</div>
-    <div class="actions">
-      <span id="statusText" class="status">판단과 이유를 작성하세요.</span>
-      <button id="submitBtn" class="primary" onclick="submitCurrent()">이 추리 제출하기</button>
-    </div>
-    <div id="shareBox" class="share-box">
-      <h3>💬 선생님이 공개한 다른 추리</h3>
-      <div id="sharedList" class="shared-list"></div>
-    </div>
-    <div class="actions" style="justify-content:flex-end">
-      <button id="nextBtn" class="secondary" style="display:none" onclick="nextCase()">다음 사건 ▶</button>
-    </div>
-  </div>
- </div>
-</section>
+    <div class="case-grid">
+      <article class="case-card">
+        <div class="case-head"><span class="case-no">사건 01</span><span class="corr pos">양의 상관관계</span></div>
+        <h2>공부 시간 ↔ 시험 성적</h2>
+        <p>학생들을 조사했더니 평소 공부 시간이 길수록 시험 성적이 높은 경향이 나타났습니다.</p>
+        <div class="vars"><span class="var">공부 시간</span><span class="arrow">↔</span><span class="var">시험 성적</span></div>
+      </article>
 
-<section id="resultScreen" class="screen">
-  <div class="result">
-    <h2>🕵️ 추리 제출 완료</h2>
-    <p>10개의 사건에 대한 자신의 판단과 근거를 모두 제출했습니다.</p>
-    <div class="summary">이 활동에는 자동 정답이 없습니다.<br>수업에서는 서로 다른 설명을 비교하면서 <b>상관관계만으로 인과관계를 단정할 수 있는지</b>, 어떤 추가 정보가 필요한지 토론해 보세요.</div>
-    <div id="savedList" class="saved-list"></div>
-    <button class="primary" style="margin-top:16px" onclick="restartActivity()">처음부터 다시 하기</button>
-    <br><button class="back" style="margin-top:10px" onclick="location.href='stat.html'">⬅ 통계 콘텐츠로 돌아가기</button>
-  </div>
-</section>
+      <article class="case-card">
+        <div class="case-head"><span class="case-no">사건 02</span><span class="corr neg">음의 상관관계</span></div>
+        <h2>스마트폰 사용 시간 ↔ 수면 시간</h2>
+        <p>학생들을 조사했더니 하루 스마트폰 사용 시간이 길수록 수면 시간이 짧은 경향이 나타났습니다.</p>
+        <div class="vars"><span class="var">스마트폰 사용 시간</span><span class="arrow">↔</span><span class="var">수면 시간</span></div>
+      </article>
+
+      <article class="case-card">
+        <div class="case-head"><span class="case-no">사건 03</span><span class="corr neg">음의 상관관계</span></div>
+        <h2>책상 어질러짐 정도 ↔ 시험 성적</h2>
+        <p>학생들을 조사했더니 책상이 많이 어질러져 있을수록 시험 성적이 낮은 경향이 나타났습니다.</p>
+        <div class="vars"><span class="var">책상 어질러짐 정도</span><span class="arrow">↔</span><span class="var">시험 성적</span></div>
+      </article>
+
+      <article class="case-card">
+        <div class="case-head"><span class="case-no">사건 04</span><span class="corr pos">양의 상관관계</span></div>
+        <h2>아침식사 빈도 ↔ 시험 성적</h2>
+        <p>학생들을 조사했더니 아침식사를 자주 하는 학생일수록 시험 성적이 높은 경향이 나타났습니다.</p>
+        <div class="vars"><span class="var">아침식사 빈도</span><span class="arrow">↔</span><span class="var">시험 성적</span></div>
+      </article>
+
+      <article class="case-card">
+        <div class="case-head"><span class="case-no">사건 05</span><span class="corr neg">음의 상관관계</span></div>
+        <h2>원/달러 환율 ↔ 해외여행객 수</h2>
+        <p>일정 기간을 조사했더니 원/달러 환율이 높을수록 해외여행을 떠나는 사람 수가 적은 경향이 나타났습니다.</p>
+        <div class="vars"><span class="var">원/달러 환율</span><span class="arrow">↔</span><span class="var">해외여행객 수</span></div>
+      </article>
+    </div>
+
+    <div class="guide">
+      <b>💡 생각해 볼 수 있는 설명</b><br>
+      한 변수가 다른 변수에 직접 영향을 주었을 수도 있고, 중간 요인을 거쳤을 수도 있습니다. 또는 제3의 요인이 두 변수 모두에 영향을 주었거나, 실제 관련이 없는데 우연히 상관관계가 나타났을 수도 있습니다. 현재 정보만으로 판단하기 어렵다고 생각해도 괜찮습니다.
+    </div>
+
+    <div class="form-area">
+      <h2>📝 이제 나의 추리를 제출해 보세요</h2>
+      <p>다섯 사례에 대한 판단과 이유를 Google Form에 작성합니다.<br>폼은 새 탭에서 열리므로 이 페이지를 다시 확인할 수 있습니다.</p>
+      <button class="primary" onclick="openForm()">내 생각 제출하기 ↗</button>
+      <div class="small">Google Form이 새 탭에서 열립니다.</div>
+    </div>
+
+    <button class="back" onclick="location.href='stat.html'">⬅ 통계 콘텐츠로 돌아가기</button>
+  </main>
 </div>
+
 <script>
-// Google Apps Script 웹앱 주소를 아래에 넣으면 모든 학생 응답이 연결된 Google Sheet에 저장됩니다.
-// 예: const API_URL = "https://script.google.com/macros/s/...../exec";
-const API_URL = "https://script.google.com/macros/s/AKfycbwIz2ao_02y64PeXh3zBSIMy9d109xhKUWB9zi4TjMGzSZgNWiQ2V8nRVhal8A9N0fqtQ/exec";
-const API_CONNECTED = API_URL.startsWith("https://script.google.com/macros/s/");
-
-const STANCES = [
-  ["direct","두 변수 사이의 직접적인 영향이 중요해 보인다"],
-  ["third","제3의 요인이 두 변수 모두에 영향을 줄 가능성이 크다"],
-  ["reverse","반대 방향의 영향(역인과)도 생각할 수 있다"],
-  ["multiple","여러 원인이 함께 작용했을 가능성이 크다"],
-  ["uncertain","현재 자료만으로는 인과관계를 판단하기 어렵다"]
-];
-
-// 일부러 한 가지 정답으로 단정하기 어려운 주제 10개
-const CASES = [
-  {id:"C01",title:"사건 01 · 공부 시간과 시험 성적",scene:"한 학급에서 학생들의 평소 공부 시간과 시험 성적 사이에 뚜렷한 양의 상관관계가 나타났다. 공부 방법, 기초 실력, 학습 동기, 사교육 여부 등은 따로 조사하지 않았다.",x:"공부 시간",y:"시험 성적",pattern:"positive",seed:101},
-  {id:"C02",title:"사건 02 · 스마트폰과 수면",scene:"학생들의 하루 스마트폰 사용 시간과 수면 시간을 조사했더니 음의 상관관계가 나타났다. 스마트폰을 사용하는 시간대와 개인별 생활 습관은 조사하지 않았다.",x:"스마트폰 사용 시간",y:"수면 시간",pattern:"negative",seed:113},
-  {id:"C03",title:"사건 03 · 광고비와 판매량",scene:"여러 상품의 한 달 광고비와 판매량을 비교했더니 양의 상관관계가 나타났다. 상품 인지도, 원래의 예상 수요, 가격 할인 여부는 조사하지 않았다.",x:"광고비",y:"판매량",pattern:"positive",seed:127},
-  {id:"C04",title:"사건 04 · 독서 시간과 어휘력",scene:"학생들의 일주일 평균 독서 시간과 어휘력 검사 점수 사이에 양의 상관관계가 나타났다. 평소 언어 능력과 가정의 독서 환경은 별도로 조사하지 않았다.",x:"독서 시간",y:"어휘력 점수",pattern:"positive",seed:139},
-  {id:"C05",title:"사건 05 · 학원 수강 시간과 성적",scene:"학생들의 주당 학원 수강 시간과 수학 성적을 조사했더니 양의 상관관계가 나타났다. 학생의 기존 성취도, 가정환경, 학습 의지 등은 조사하지 않았다.",x:"학원 수강 시간",y:"수학 성적",pattern:"positive",seed:151},
-  {id:"C06",title:"사건 06 · 게임 시간과 학업 성취",scene:"학생들의 하루 게임 시간과 학업 성취도 사이에 음의 상관관계가 나타났다. 수면 시간, 공부 시간, 스트레스 수준과 같은 변수는 함께 조사하지 않았다.",x:"게임 시간",y:"학업 성취도",pattern:"negative",seed:163},
-  {id:"C07",title:"사건 07 · 통학 시간과 지각 횟수",scene:"한 학교 학생들의 평균 통학 시간과 한 학기 지각 횟수 사이에 양의 상관관계가 나타났다. 교통수단, 출발 시각, 교통 혼잡 정도는 따로 기록하지 않았다.",x:"통학 시간",y:"지각 횟수",pattern:"positive",seed:179},
-  {id:"C08",title:"사건 08 · 운동 시간과 스트레스",scene:"학생들의 주당 운동 시간과 스트레스 검사 점수 사이에 음의 상관관계가 나타났다. 원래 스트레스가 적은 학생이 운동을 더 즐기는지, 다른 생활 습관이 있는지는 조사하지 않았다.",x:"운동 시간",y:"스트레스 점수",pattern:"negative",seed:193},
-  {id:"C09",title:"사건 09 · 도서관 이용과 성적",scene:"학교 도서관 이용 횟수가 많은 학생일수록 평균 시험 성적이 높은 경향이 나타났다. 도서관에서 실제로 무엇을 했는지와 학생의 원래 학습 태도는 조사하지 않았다.",x:"도서관 이용 횟수",y:"평균 시험 성적",pattern:"positive",seed:211},
-  {id:"C10",title:"사건 10 · 결석일수와 성적",scene:"한 학년에서 결석일수가 많은 학생일수록 시험 성적이 낮은 경향이 나타났다. 결석 이유, 건강 상태, 학습 환경 등은 별도로 조사하지 않았다.",x:"결석일수",y:"시험 성적",pattern:"negative",seed:227}
-];
-
-let idx=0, submitted=0, selectedStance="", identity={}, records=[];
-
-window.addEventListener('DOMContentLoaded',()=>{
-  if(!API_CONNECTED) document.getElementById('setupWarning').style.display='block';
-});
-
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function beginActivity(){
-  const cls=document.getElementById('classInput').value.trim();
-  const num=document.getElementById('numberInput').value.trim();
-  const nick=document.getElementById('nickInput').value.trim();
-  if(!cls||!num||!nick){alert('반, 번호, 닉네임(또는 이름)을 모두 입력해 주세요.');return;}
-  identity={cls,num,nick}; idx=0;submitted=0;records=[]; show('caseScreen'); loadCase();
-}
-function loadCase(){
-  const c=CASES[idx]; selectedStance="";
-  document.getElementById('progressBadge').textContent=`사건 ${idx+1} / ${CASES.length}`;
-  document.getElementById('submitBadge').textContent=`제출 ${submitted} / ${CASES.length}`;
-  document.getElementById('caseTitle').textContent=c.title;
-  document.getElementById('caseScene').textContent=c.scene;
-  document.getElementById('varX').textContent=`X · ${c.x}`;
-  document.getElementById('varY').textContent=`Y · ${c.y}`;
-  document.getElementById('reasonInput').value='';
-  document.getElementById('hiddenInput').value='';
-  document.getElementById('statusText').className='status';
-  document.getElementById('statusText').textContent='판단과 이유를 작성하세요.';
-  document.getElementById('submitBtn').disabled=false;
-  document.getElementById('nextBtn').style.display='none';
-  document.getElementById('shareBox').style.display='none';
-  renderStances(); drawPlot(c);
-}
-function renderStances(){
-  const g=document.getElementById('stanceGrid');g.innerHTML='';
-  STANCES.forEach(([v,t])=>{const b=document.createElement('button');b.className='stance';b.textContent=t;b.onclick=()=>{selectedStance=v;document.querySelectorAll('.stance').forEach(x=>x.classList.remove('selected'));b.classList.add('selected')};g.appendChild(b)});
-}
-async function submitCurrent(){
-  const c=CASES[idx]; const reason=document.getElementById('reasonInput').value.trim(); const hidden=document.getElementById('hiddenInput').value.trim();
-  if(!selectedStance){alert('먼저 자신의 판단을 하나 선택해 주세요.');return;}
-  if(reason.length<10){alert('이유를 조금 더 구체적으로 적어 주세요. (10자 이상)');return;}
-  const stanceText=(STANCES.find(x=>x[0]===selectedStance)||['',''])[1];
-  const payload={type:'student_response',class:identity.cls,number:identity.num,nickname:identity.nick,caseId:c.id,caseTitle:c.title,stance:selectedStance,stanceText,reason,hiddenFactor:hidden};
-  document.getElementById('submitBtn').disabled=true;
-  const status=document.getElementById('statusText');status.className='status warn';status.textContent='제출 중...';
-  try{
-    if(API_CONNECTED){
-      await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
-    }else{
-      const local=JSON.parse(localStorage.getItem('correlation_local_responses')||'[]');local.push({...payload,timestamp:new Date().toISOString()});localStorage.setItem('correlation_local_responses',JSON.stringify(local));
-    }
-    records.push({title:c.title,stance:stanceText,reason}); submitted++;
-    document.getElementById('submitBadge').textContent=`제출 ${submitted} / ${CASES.length}`;
-    status.className='status ok';status.textContent='✓ 추리가 제출되었습니다.';
-    document.querySelectorAll('.stance').forEach(x=>x.disabled=true);document.getElementById('reasonInput').disabled=true;document.getElementById('hiddenInput').disabled=true;
-    loadShared(c.id);
-    document.getElementById('nextBtn').style.display='inline-block';document.getElementById('nextBtn').textContent=idx===CASES.length-1?'활동 마무리 ▶':'다음 사건 ▶';
-  }catch(e){status.className='status warn';status.textContent='제출에 실패했습니다. 잠시 후 다시 시도해 주세요.';document.getElementById('submitBtn').disabled=false;}
-}
-function nextCase(){
-  document.getElementById('reasonInput').disabled=false;document.getElementById('hiddenInput').disabled=false;
-  idx++; if(idx>=CASES.length){finish();return;} loadCase();
-}
-function finish(){
-  show('resultScreen');document.getElementById('progressBadge').textContent=`사건 ${CASES.length} / ${CASES.length}`;document.getElementById('submitBadge').textContent=`제출 ${submitted} / ${CASES.length}`;
-  document.getElementById('savedList').innerHTML=records.map((r,i)=>`<div><b>${i+1}. ${escapeHtml(r.title.replace(/사건 \d+ · /,''))}</b><br>${escapeHtml(r.stance)}<br><span style="color:#666">${escapeHtml(r.reason)}</span></div>`).join('');
-}
-function restartActivity(){location.reload()}
-function escapeHtml(s){return String(s).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
-
-// 교사가 Google Sheet에서 '공개' 열을 TRUE로 바꾼 답변만 학생에게 보입니다.
-function loadShared(caseId){
-  const box=document.getElementById('shareBox'),list=document.getElementById('sharedList');list.innerHTML='';
-  if(!API_CONNECTED){box.style.display='none';return;}
-  const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
-  window[cb]=function(data){
-    try{
-      const rows=(data&&data.responses)||[];
-      if(rows.length){box.style.display='block';list.innerHTML=rows.slice(0,6).map(r=>`<div class="shared-item"><b>${escapeHtml(r.stanceText||'다른 의견')}</b><br>${escapeHtml(r.reason||'')}${r.hiddenFactor?`<br><span style="color:#657">의심한 요인: ${escapeHtml(r.hiddenFactor)}</span>`:''}</div>`).join('')}
-      else box.style.display='none';
-    }finally{delete window[cb];script.remove();}
-  };
-  const script=document.createElement('script');script.src=`${API_URL}?action=public&caseId=${encodeURIComponent(caseId)}&callback=${encodeURIComponent(cb)}`;script.onerror=()=>{delete window[cb];script.remove();};document.body.appendChild(script);
-}
-function rand(seed){let x=Math.sin(seed)*10000;return x-Math.floor(x)}
-function makePoints(pattern,seed){const pts=[];for(let i=0;i<16;i++){let x=8+i*5.6+rand(seed+i)*4,y;if(pattern==='positive')y=16+x*.68+(rand(seed*3+i)-.5)*27;else if(pattern==='negative')y=87-x*.65+(rand(seed*4+i)-.5)*27;else y=12+rand(seed*5+i)*76;y=Math.max(7,Math.min(93,y));pts.push([x,y])}return pts}
-function drawPlot(c){const svg=document.getElementById('plot'),NS='http://www.w3.org/2000/svg';svg.innerHTML='';const mk=(n,a)=>{const e=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));svg.appendChild(e);return e};mk('rect',{x:48,y:20,width:425,height:245,fill:'#fffdf8',stroke:'#c7b28f','stroke-width':1});for(let i=0;i<=5;i++){const y=20+i*49;mk('line',{x1:48,y1:y,x2:473,y2:y,stroke:'#e8dfd1','stroke-width':1});const x=48+i*85;mk('line',{x1:x,y1:20,x2:x,y2:265,stroke:'#e8dfd1','stroke-width':1})}mk('line',{x1:48,y1:265,x2:473,y2:265,stroke:'#55483e','stroke-width':2});mk('line',{x1:48,y1:20,x2:48,y2:265,stroke:'#55483e','stroke-width':2});makePoints(c.pattern,c.seed).forEach(([px,py])=>mk('circle',{cx:48+px*4.25,cy:265-py*2.45,r:5.3,class:'dot'}));const tx=mk('text',{x:260,y:302,'text-anchor':'middle',class:'axis-label'});tx.textContent=c.x;const ty=mk('text',{x:15,y:145,'text-anchor':'middle',class:'axis-label',transform:'rotate(-90 15 145)'});ty.textContent=c.y}
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdkmD4uPkGdx1Ltcw6FiGeO-njUagMgG91jV8FOxmCC5Byq3w/viewform";
+function openForm(){ window.open(FORM_URL, "_blank", "noopener,noreferrer"); }
 </script>
 </body>
 </html>
