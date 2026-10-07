@@ -8,32 +8,128 @@
 :root{
   --ink:#2d3136; --paper:#fffaf1; --brown:#72543c; --line:#b99b73;
   --mint:#d7f1e8; --pink:#f8d8e6; --sky:#dcecff; --gold:#e2b84e; --blue:#4f7da5;
+  --soft:#fffdf7; --danger:#c95d7e; --success:#2f745d;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:'Malgun Gothic',sans-serif;color:var(--ink);overflow:hidden}
 body{
-  margin:0;min-height:100vh;font-family:'Malgun Gothic',sans-serif;color:var(--ink);
   background:
     radial-gradient(circle at 10% 12%,rgba(215,241,232,.98),transparent 28%),
     radial-gradient(circle at 88% 14%,rgba(248,216,230,.95),transparent 28%),
     linear-gradient(135deg,#dcecff 0%,#f8e5ee 48%,#dff3ea 100%);
-  padding:18px;text-align:center
 }
-.wrap{max-width:1050px;margin:auto;background:rgba(255,250,241,.97);border:2px solid #a88a64;border-radius:22px;box-shadow:0 18px 42px rgba(66,49,38,.23);overflow:hidden}
-header{padding:22px 24px 16px;background:linear-gradient(180deg,#fff7df,#f2e2bd);border-bottom:2px dashed #b59569}
-h1{margin:0;color:#513927;font-size:30px}.subtitle{margin:9px 0 0;color:#6d5948;font-weight:bold;line-height:1.65}
-.content{padding:24px}.intro{max-width:860px;margin:0 auto 20px;background:#fffdf7;border:2px solid #c9ad84;border-radius:16px;padding:18px 20px;text-align:left;line-height:1.8;box-shadow:0 7px 16px rgba(76,56,40,.10)}
-.case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:930px;margin:0 auto 22px}
-.case-card{background:#fffdf7;border:2px solid #c3a57d;border-radius:18px;padding:17px;text-align:left;box-shadow:0 7px 17px rgba(78,57,40,.11)}
-.case-card:last-child{grid-column:1/-1;max-width:455px;width:100%;justify-self:center}
-.case-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:2px dashed #d1b894}
-.case-no{font-size:13px;font-weight:900;color:#73583f;background:#f2e3c9;padding:5px 9px;border-radius:999px}.corr{font-size:13px;font-weight:900;padding:5px 9px;border-radius:999px}.corr.pos{background:#d7f1e8;color:#2f745d}.corr.neg{background:#f8d8e6;color:#9c4264}
-.case-card h2{font-size:20px;margin:13px 0 8px;color:#513927}.case-card p{margin:0;line-height:1.65;color:#544a42}
-.vars{margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}.var{background:#edf6f3;border:1px solid #b6d5ca;border-radius:10px;padding:8px 10px;font-weight:800}.arrow{font-weight:900;color:#7d6857}
-.guide{max-width:880px;margin:0 auto 22px;background:#eef4fb;border:1px solid #aebfd2;border-radius:14px;padding:16px 18px;text-align:left;line-height:1.7}.guide b{color:#375f84}
-.form-area{max-width:760px;margin:0 auto;background:linear-gradient(135deg,#fff4cc,#ffe7ef);border:2px solid #dfbd71;border-radius:18px;padding:22px 18px}.form-area h2{margin:0 0 8px;color:#563f29}.form-area p{margin:0 0 16px;line-height:1.65;color:#655746}
-.primary,.back{border:0;border-radius:12px;padding:14px 24px;font-size:17px;font-weight:900;cursor:pointer;transition:.15s}.primary{background:#4f7da5;color:#fff;box-shadow:0 5px 12px rgba(79,125,165,.25)}.back{background:#7d6857;color:white;margin-top:12px}.primary:hover,.back:hover{filter:brightness(1.04);transform:translateY(-1px)}
-.small{margin-top:10px;font-size:13px;color:#786a5f}
-@media(max-width:760px){.case-grid{grid-template-columns:1fr}.case-card:last-child{grid-column:auto;max-width:none}.content{padding:16px}h1{font-size:25px}}
+.page{
+  height:100dvh; padding:14px; display:flex; align-items:stretch; justify-content:center;
+}
+.shell{
+  width:min(1180px,100%); height:100%; background:rgba(255,250,241,.97); border:2px solid #a88a64;
+  border-radius:24px; box-shadow:0 18px 42px rgba(66,49,38,.23); overflow:hidden;
+  display:grid; grid-template-columns:260px 1fr;
+}
+.sidebar{
+  background:linear-gradient(180deg,#fff7df,#fcefd2); border-right:2px dashed #b59569;
+  padding:18px 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+}
+.side-title{font-size:24px;font-weight:900;color:#513927;text-align:center;line-height:1.3;margin:0}
+.mascot{
+  width:min(190px,78%); max-width:190px; aspect-ratio:1/1; object-fit:contain; filter:drop-shadow(0 8px 14px rgba(75,59,44,.18));
+}
+.bubble{
+  width:100%; background:#fffefb; border:2px solid #d5be98; border-radius:18px; padding:14px;
+  line-height:1.6; font-size:14px; color:#5d4b3d; text-align:left;
+}
+.bubble b{color:#335d81}
+.main{display:flex; flex-direction:column; min-width:0;}
+.topbar{
+  padding:14px 20px 10px; border-bottom:2px dashed #ccb08a; background:rgba(255,255,255,.38);
+}
+.toprow{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.title{margin:0;font-size:27px;color:#513927}
+.small-btn{
+  border:0;background:#7d6857;color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:800;cursor:pointer;
+}
+.top-note{margin:8px 0 0;color:#6d5948;font-weight:bold;line-height:1.55;font-size:14px}
+.progress-wrap{display:flex;align-items:center;gap:10px;margin-top:10px}
+.progress-bar{flex:1;height:12px;background:#eadbc2;border-radius:999px;overflow:hidden;border:1px solid #ceb086}
+.progress-fill{height:100%;width:20%;background:linear-gradient(90deg,#7fc2b0,#4f7da5)}
+.progress-text{font-size:13px;font-weight:900;color:#6b5746;min-width:82px;text-align:right}
+.game{flex:1; display:flex; align-items:center; justify-content:center; padding:14px; min-height:0;}
+.card{
+  width:min(840px,100%); height:100%; max-height:100%; background:#fffdf7; border:2px solid #c7aa80; border-radius:22px;
+  box-shadow:0 10px 20px rgba(76,56,40,.09); padding:16px 18px; display:flex; flex-direction:column; justify-content:space-between; gap:12px;
+}
+.casehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.case-no{font-size:13px;font-weight:900;color:#73583f;background:#f2e3c9;padding:5px 10px;border-radius:999px}
+.case-title{margin:0;font-size:24px;color:#4d392a}
+.case-desc{margin:4px 0 0;color:#5d4e43;line-height:1.55;font-size:15px}
+.chart-panel{
+  display:grid; grid-template-columns:minmax(0,1fr) 240px; gap:14px; align-items:stretch; min-height:0;
+}
+.chart-box{
+  background:linear-gradient(180deg,#fdfcff,#f4f9ff); border:2px solid #bdd0e1; border-radius:18px; padding:10px; display:flex; flex-direction:column;
+}
+.chart-title{font-size:13px;font-weight:900;color:#49647f;margin-bottom:8px}
+canvas{width:100%; height:300px; border-radius:14px; background:white; border:1px solid #d6e3ee}
+.legend{
+  background:#fffcf6; border:2px dashed #d7bc96; border-radius:18px; padding:14px 14px 10px; display:flex; flex-direction:column; justify-content:center;
+}
+.legend h3{margin:0 0 8px;color:#563f29;font-size:17px}
+.legend p{margin:0 0 12px;font-size:14px;line-height:1.55;color:#60554b}
+.choice-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.choice{
+  border:2px solid #cfc4b3;background:white;border-radius:12px;padding:12px 10px;font-size:15px;font-weight:900;color:#584739;cursor:pointer;transition:.15s;
+}
+.choice:hover{transform:translateY(-1px);border-color:#93b6d5;background:#f6fbff}
+.choice.correct{background:#e7f7ef;border-color:#7fc2b0;color:#24644f}
+.choice.wrong{background:#fff0f3;border-color:#df8aa5;color:#9a3d5f}
+.feedback{
+  min-height:54px; border-radius:14px; padding:12px 14px; font-size:14px; line-height:1.55; display:flex; align-items:center;
+  background:#f6f0e6; color:#5d4c3d; border:1px solid #dfc7a0;
+}
+.feedback.ok{background:#eaf8f1;border-color:#93d3bb;color:#245f4b}
+.feedback.no{background:#fff1f5;border-color:#ebb1c3;color:#8f3959}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nav-left{font-size:13px;color:#6a594a;font-weight:900}
+.nav-right{display:flex;gap:10px}
+.navbtn,.formbtn{
+  border:0; border-radius:12px; padding:13px 20px; font-size:16px; font-weight:900; cursor:pointer; transition:.15s;
+}
+.navbtn{background:#7d6857;color:#fff}
+.formbtn{background:#4f7da5;color:#fff;box-shadow:0 5px 12px rgba(79,125,165,.25)}
+.navbtn:hover,.formbtn:hover,.small-btn:hover{filter:brightness(1.04); transform:translateY(-1px)}
+.hidden{display:none !important}
+.summary{
+  text-align:left; display:flex; flex-direction:column; gap:14px; height:100%; justify-content:center;
+}
+.summary h2{margin:0;color:#4d392a;font-size:28px;text-align:center}
+.summary p{margin:0;color:#5d4e43;line-height:1.65;font-size:16px;text-align:center}
+.summary-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.summary-item{background:#fffdf7;border:2px solid #ccb08a;border-radius:14px;padding:12px;line-height:1.5}
+.summary-item b{color:#355f84}
+.summary-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:4px}
+@media (max-width: 980px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{border-right:0;border-bottom:2px dashed #b59569;flex-direction:row;justify-content:flex-start;gap:14px;padding:12px 14px}
+  .mascot{width:94px;max-width:94px}
+  .bubble{font-size:13px;padding:10px 12px}
+  .side-title{font-size:20px;text-align:left}
+  .chart-panel{grid-template-columns:1fr}
+  canvas{height:250px}
+}
+@media (max-width: 680px){
+  .page{padding:8px}
+  .topbar{padding:10px 12px 8px}
+  .title{font-size:22px}
+  .top-note{font-size:13px}
+  .game{padding:10px}
+  .card{padding:12px;gap:10px}
+  .case-title{font-size:21px}
+  .case-desc{font-size:14px}
+  .choice{padding:10px 8px;font-size:14px}
+  .feedback{min-height:48px;padding:10px 12px;font-size:13px}
+  .navbtn,.formbtn{padding:11px 14px;font-size:14px}
+  .summary-list{grid-template-columns:1fr}
+}
 </style>
 <script>
 (async function checkCorrelationAuth(){
@@ -52,77 +148,325 @@ h1{margin:0;color:#513927;font-size:30px}.subtitle{margin:9px 0 0;color:#6d5948;
 </script>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>🔎 데이터 탐정: 상관관계를 추리하라</h1>
-    <p class="subtitle">두 변수 사이에 상관관계가 보인다고 해서 곧바로 원인과 결과라고 단정할 수 있을까요?<br>다섯 가지 사례를 살펴보고, 가장 타당하다고 생각하는 설명과 그 근거를 정해 보세요.</p>
-  </header>
+<div class="page">
+  <div class="shell">
+    <aside class="sidebar">
+      <img class="mascot" src="correlation_cat_detective.png" alt="귀여운 탐정 고양이">
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0;">
+        <h1 class="side-title">🔎 데이터 탐정</h1>
+        <div class="bubble">
+          <b>활동 방법</b><br>
+          ① 산점도를 보고 <b>양 / 음 / 없음</b> 중 하나를 고릅니다.<br>
+          ② 맞히면 다음 사건으로 넘어갑니다.<br>
+          ③ 다섯 사건을 모두 본 뒤 <b>Google Form</b>에서 왜 그런 상관관계가 나타났는지 자신의 생각을 제출하세요.
+        </div>
+      </div>
+    </aside>
 
-  <main class="content">
-    <div class="intro">
-      <b>🗂 활동 방법</b><br>
-      ① 아래 5개의 사례를 차례로 읽습니다.<br>
-      ② 각 상관관계가 왜 나타났는지 자신의 생각을 정합니다.<br>
-      ③ 모든 사례를 읽은 뒤 <b>「내 생각 제출하기」</b>를 눌러 Google Form에서 답과 이유를 작성합니다.<br><br>
-      <b>중요:</b> 이 활동은 정답을 맞히는 활동이 아닙니다. 같은 자료를 보고도 서로 다른 설명이 가능하며, 핵심은 <b>자신의 판단을 근거 있게 설명하는 것</b>입니다.
-    </div>
+    <section class="main">
+      <div class="topbar">
+        <div class="toprow">
+          <h2 class="title">상관관계 방향을 먼저 파악해 보자!</h2>
+          <button class="small-btn" onclick="location.href='stat.html'">⬅ 돌아가기</button>
+        </div>
+        <p class="top-note">이 페이지에서는 먼저 <b>산점도의 모양</b>을 읽어 상관관계의 방향을 판단합니다. 모든 사건을 마친 뒤 마지막 화면에서 <b>내 생각 제출하기</b> 버튼을 눌러 Google Form으로 이동하세요.</p>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+          <div id="progressText" class="progress-text">1 / 5 사건</div>
+        </div>
+      </div>
 
-    <div class="case-grid">
-      <article class="case-card">
-        <div class="case-head"><span class="case-no">사건 01</span><span class="corr pos">양의 상관관계</span></div>
-        <h2>공부 시간 ↔ 시험 성적</h2>
-        <p>학생들을 조사했더니 평소 공부 시간이 길수록 시험 성적이 높은 경향이 나타났습니다.</p>
-        <div class="vars"><span class="var">공부 시간</span><span class="arrow">↔</span><span class="var">시험 성적</span></div>
-      </article>
+      <div class="game">
+        <div class="card" id="card">
+          <div id="playView">
+            <div class="casehead">
+              <div>
+                <span id="caseNo" class="case-no">사건 01</span>
+                <h3 id="caseTitle" class="case-title">공부 시간 ↔ 시험 성적</h3>
+                <p id="caseDesc" class="case-desc"></p>
+              </div>
+            </div>
 
-      <article class="case-card">
-        <div class="case-head"><span class="case-no">사건 02</span><span class="corr neg">음의 상관관계</span></div>
-        <h2>스마트폰 사용 시간 ↔ 수면 시간</h2>
-        <p>학생들을 조사했더니 하루 스마트폰 사용 시간이 길수록 수면 시간이 짧은 경향이 나타났습니다.</p>
-        <div class="vars"><span class="var">스마트폰 사용 시간</span><span class="arrow">↔</span><span class="var">수면 시간</span></div>
-      </article>
+            <div class="chart-panel">
+              <div class="chart-box">
+                <div class="chart-title">📈 산점도를 보고 방향을 판단해 보세요</div>
+                <canvas id="scatterCanvas" width="700" height="420"></canvas>
+              </div>
 
-      <article class="case-card">
-        <div class="case-head"><span class="case-no">사건 03</span><span class="corr neg">음의 상관관계</span></div>
-        <h2>책상 어질러짐 정도 ↔ 시험 성적</h2>
-        <p>학생들을 조사했더니 책상이 많이 어질러져 있을수록 시험 성적이 낮은 경향이 나타났습니다.</p>
-        <div class="vars"><span class="var">책상 어질러짐 정도</span><span class="arrow">↔</span><span class="var">시험 성적</span></div>
-      </article>
+              <div class="legend">
+                <h3>문제</h3>
+                <p><b id="varALabel">공부 시간</b>과 <b id="varBLabel">시험 성적</b> 사이의 관계는 어떻게 보이나요?</p>
+                <div class="choice-grid" id="choices">
+                  <button class="choice" data-answer="pos">양의 상관관계</button>
+                  <button class="choice" data-answer="neg">음의 상관관계</button>
+                  <button class="choice" data-answer="none">상관관계 없음</button>
+                </div>
+              </div>
+            </div>
 
-      <article class="case-card">
-        <div class="case-head"><span class="case-no">사건 04</span><span class="corr pos">양의 상관관계</span></div>
-        <h2>아침식사 빈도 ↔ 시험 성적</h2>
-        <p>학생들을 조사했더니 아침식사를 자주 하는 학생일수록 시험 성적이 높은 경향이 나타났습니다.</p>
-        <div class="vars"><span class="var">아침식사 빈도</span><span class="arrow">↔</span><span class="var">시험 성적</span></div>
-      </article>
+            <div id="feedback" class="feedback">산점도의 점들이 전체적으로 어느 방향으로 퍼져 있는지 살펴보세요.</div>
+          </div>
 
-      <article class="case-card">
-        <div class="case-head"><span class="case-no">사건 05</span><span class="corr neg">음의 상관관계</span></div>
-        <h2>원/달러 환율 ↔ 해외여행객 수</h2>
-        <p>일정 기간을 조사했더니 원/달러 환율이 높을수록 해외여행을 떠나는 사람 수가 적은 경향이 나타났습니다.</p>
-        <div class="vars"><span class="var">원/달러 환율</span><span class="arrow">↔</span><span class="var">해외여행객 수</span></div>
-      </article>
-    </div>
+          <div id="summaryView" class="summary hidden">
+            <h2>🎉 모든 사건을 확인했어요!</h2>
+            <p>이제 각 사례에서 왜 이런 상관관계가 나타났는지 생각해 보고,<br><b>Google Form</b>에 자신의 판단과 이유를 제출해 보세요.</p>
+            <div class="summary-list" id="summaryList"></div>
+            <div class="summary-actions">
+              <button class="formbtn" onclick="openForm()">내 생각 제출하기 ↗</button>
+              <button class="navbtn" onclick="restartGame()">처음부터 다시 보기</button>
+            </div>
+          </div>
 
-    <div class="guide">
-      <b>💡 생각해 볼 수 있는 설명</b><br>
-      한 변수가 다른 변수에 직접 영향을 주었을 수도 있고, 중간 요인을 거쳤을 수도 있습니다. 또는 제3의 요인이 두 변수 모두에 영향을 주었거나, 실제 관련이 없는데 우연히 상관관계가 나타났을 수도 있습니다. 현재 정보만으로 판단하기 어렵다고 생각해도 괜찮습니다.
-    </div>
-
-    <div class="form-area">
-      <h2>📝 이제 나의 추리를 제출해 보세요</h2>
-      <p>다섯 사례에 대한 판단과 이유를 Google Form에 작성합니다.<br>폼은 새 탭에서 열리므로 이 페이지를 다시 확인할 수 있습니다.</p>
-      <button class="primary" onclick="openForm()">내 생각 제출하기 ↗</button>
-      <div class="small">Google Form이 새 탭에서 열립니다.</div>
-    </div>
-
-    <button class="back" onclick="location.href='stat.html'">⬅ 통계 콘텐츠로 돌아가기</button>
-  </main>
+          <div class="nav">
+            <div class="nav-left" id="navHint">정답을 맞혀야 다음 사건으로 넘어갈 수 있어요.</div>
+            <div class="nav-right">
+              <button class="navbtn" id="prevBtn" onclick="prevCase()">이전</button>
+              <button class="navbtn" id="nextBtn" onclick="nextCase()" disabled>다음 사건 ▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 
 <script>
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdkmD4uPkGdx1Ltcw6FiGeO-njUagMgG91jV8FOxmCC5Byq3w/viewform";
-function openForm(){ window.open(FORM_URL, "_blank", "noopener,noreferrer"); }
+const cases = [
+  {
+    title:"공부 시간 ↔ 시험 성적",
+    desc:"학생들을 조사했더니 평소 공부 시간이 길수록 시험 성적이 높은 경향이 나타났습니다.",
+    a:"공부 시간", b:"시험 성적", trend:"pos"
+  },
+  {
+    title:"스마트폰 사용 시간 ↔ 수면 시간",
+    desc:"학생들을 조사했더니 하루 스마트폰 사용 시간이 길수록 수면 시간이 짧은 경향이 나타났습니다.",
+    a:"스마트폰 사용 시간", b:"수면 시간", trend:"neg"
+  },
+  {
+    title:"책상 어질러짐 정도 ↔ 시험 성적",
+    desc:"학생들을 조사했더니 책상이 많이 어질러져 있을수록 시험 성적이 낮은 경향이 나타났습니다.",
+    a:"책상 어질러짐 정도", b:"시험 성적", trend:"neg"
+  },
+  {
+    title:"아침식사 빈도 ↔ 시험 성적",
+    desc:"학생들을 조사했더니 아침식사를 자주 하는 학생일수록 시험 성적이 높은 경향이 나타났습니다.",
+    a:"아침식사 빈도", b:"시험 성적", trend:"pos"
+  },
+  {
+    title:"원/달러 환율 ↔ 해외여행객 수",
+    desc:"일정 기간을 조사했더니 원/달러 환율이 높을수록 해외여행을 떠나는 사람 수가 적은 경향이 나타났습니다.",
+    a:"원/달러 환율", b:"해외여행객 수", trend:"neg"
+  }
+];
+
+let current = 0;
+let solved = Array(cases.length).fill(false);
+let currentLocked = true;
+let generatedPoints = cases.map((c, idx)=>makePoints(c.trend, idx));
+
+const canvas = document.getElementById('scatterCanvas');
+const ctx = canvas.getContext('2d');
+const caseNo = document.getElementById('caseNo');
+const caseTitle = document.getElementById('caseTitle');
+const caseDesc = document.getElementById('caseDesc');
+const varALabel = document.getElementById('varALabel');
+const varBLabel = document.getElementById('varBLabel');
+const feedback = document.getElementById('feedback');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const summaryList = document.getElementById('summaryList');
+const playView = document.getElementById('playView');
+const summaryView = document.getElementById('summaryView');
+const navHint = document.getElementById('navHint');
+const choiceButtons = [...document.querySelectorAll('.choice')];
+
+choiceButtons.forEach(btn => btn.addEventListener('click', ()=>judge(btn.dataset.answer)));
+
+function mulberry32(a){
+  return function(){
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function makePoints(trend, seedOffset){
+  const rand = mulberry32(20261007 + seedOffset*97);
+  const pts = [];
+  for(let i=0;i<14;i++){
+    const x = 10 + i * 6 + rand()*8;
+    let base;
+    if(trend === 'pos') base = 18 + x * 0.72;
+    else if(trend === 'neg') base = 94 - x * 0.72;
+    else base = 52;
+    const noise = (rand() - 0.5) * 18;
+    const y = Math.max(8, Math.min(96, base + noise));
+    pts.push({x,y});
+  }
+  return pts;
+}
+
+function drawScatter(data, xLabel, yLabel){
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,w,h);
+
+  const pad = {l:70,r:24,t:24,b:56};
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+
+  ctx.strokeStyle = '#e5edf5';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=5;i++){
+    const y = pad.t + (plotH/5)*i;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(w-pad.r,y); ctx.stroke();
+  }
+  for(let i=0;i<=5;i++){
+    const x = pad.l + (plotW/5)*i;
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,h-pad.b); ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#6a86a3';
+  ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,h-pad.b); ctx.lineTo(w-pad.r,h-pad.b); ctx.stroke();
+
+  ctx.fillStyle = '#4f6276';
+  ctx.font = 'bold 16px Malgun Gothic';
+  ctx.textAlign = 'center';
+  ctx.fillText(xLabel, pad.l + plotW/2, h - 16);
+
+  ctx.save();
+  ctx.translate(20, pad.t + plotH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center';
+  ctx.fillText(yLabel, 0, 0);
+  ctx.restore();
+
+  ctx.fillStyle = '#4f7da5';
+  data.forEach(p=>{
+    const px = pad.l + (p.x/100) * plotW;
+    const py = h - pad.b - (p.y/100) * plotH;
+    ctx.beginPath();
+    ctx.arc(px, py, 8, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.85)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
+function renderCase(){
+  if(current >= cases.length){
+    showSummary();
+    return;
+  }
+  playView.classList.remove('hidden');
+  summaryView.classList.add('hidden');
+  const c = cases[current];
+  caseNo.textContent = `사건 ${String(current+1).padStart(2,'0')}`;
+  caseTitle.textContent = c.title;
+  caseDesc.textContent = c.desc;
+  varALabel.textContent = c.a;
+  varBLabel.textContent = c.b;
+  drawScatter(generatedPoints[current], c.a, c.b);
+
+  progressText.textContent = `${current+1} / ${cases.length} 사건`;
+  progressFill.style.width = `${((Math.min(current,cases.length-1))/cases.length)*100 + 20}%`;
+
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = !solved[current];
+  currentLocked = !solved[current];
+  navHint.textContent = solved[current] ? '좋아요! 다음 사건으로 넘어갈 수 있어요.' : '정답을 맞혀야 다음 사건으로 넘어갈 수 있어요.';
+
+  choiceButtons.forEach(btn=>{
+    btn.classList.remove('correct','wrong');
+    btn.disabled = solved[current];
+  });
+  if(solved[current]){
+    markSolvedButtons(c.trend);
+    feedback.className = 'feedback ok';
+    feedback.innerHTML = `정답! 이 산점도는 <b>${labelOf(c.trend)}</b>로 볼 수 있어요. 마지막에 Google Form에서 <b>왜 이런 관계가 나타났는지</b> 자신의 생각을 적어 보세요.`;
+  }else{
+    feedback.className = 'feedback';
+    feedback.textContent = '산점도의 점들이 전체적으로 어느 방향으로 퍼져 있는지 살펴보세요.';
+  }
+}
+
+function judge(answer){
+  const correct = cases[current].trend;
+  choiceButtons.forEach(btn=>btn.classList.remove('correct','wrong'));
+  if(answer === correct){
+    solved[current] = true;
+    currentLocked = false;
+    nextBtn.disabled = false;
+    markSolvedButtons(correct);
+    feedback.className = 'feedback ok';
+    feedback.innerHTML = `정답! 이 산점도는 <b>${labelOf(correct)}</b>로 볼 수 있어요. 이제 왜 이런 상관관계가 나타났는지 생각해 보세요.`;
+    navHint.textContent = '좋아요! 다음 사건으로 넘어갈 수 있어요.';
+    choiceButtons.forEach(btn=>btn.disabled = true);
+  }else{
+    const clicked = choiceButtons.find(btn=>btn.dataset.answer===answer);
+    if(clicked) clicked.classList.add('wrong');
+    feedback.className = 'feedback no';
+    feedback.innerHTML = '조금 더 살펴보세요. 점들이 전체적으로 <b>오른쪽 위</b>로 가는지, <b>오른쪽 아래</b>로 가는지, 아니면 특별한 방향이 없는지 생각해 보세요.';
+  }
+}
+
+function markSolvedButtons(correct){
+  choiceButtons.forEach(btn=>{
+    if(btn.dataset.answer===correct) btn.classList.add('correct');
+    btn.disabled = true;
+  });
+}
+
+function labelOf(key){
+  return key==='pos' ? '양의 상관관계' : key==='neg' ? '음의 상관관계' : '상관관계 없음';
+}
+
+function nextCase(){
+  if(current < cases.length - 1){
+    current += 1;
+    renderCase();
+  }else{
+    showSummary();
+  }
+}
+
+function prevCase(){
+  if(current > 0){
+    current -= 1;
+    renderCase();
+  }
+}
+
+function showSummary(){
+  playView.classList.add('hidden');
+  summaryView.classList.remove('hidden');
+  navHint.textContent = '이제 Google Form에서 자신의 생각과 이유를 제출해 보세요.';
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+  progressText.textContent = `완료!`;
+  progressFill.style.width = '100%';
+  summaryList.innerHTML = cases.map((c, i)=>`
+    <div class="summary-item"><b>사건 ${i+1}</b><br>${c.title}<br><span style="color:#6d5948">산점도 방향: ${labelOf(c.trend)}</span></div>
+  `).join('');
+}
+
+function restartGame(){
+  current = 0;
+  solved = Array(cases.length).fill(false);
+  generatedPoints = cases.map((c, idx)=>makePoints(c.trend, idx));
+  renderCase();
+}
+
+function openForm(){ window.open(FORM_URL, '_blank', 'noopener,noreferrer'); }
+
+renderCase();
 </script>
 </body>
 </html>
