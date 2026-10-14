@@ -635,12 +635,23 @@
             updateBestTexts();
         }
         setTimeout(() => {
-            boardLocked = false;
-            if (gameState !== 'playing') return;
+            if (gameState !== 'playing') {
+                boardLocked = false;
+                return;
+            }
             if (!hasAnyValidMove(board)) {
-                board = generatePlayableBoard();
-                flashText = '새 딸기판!';
-                flashUntil = performance.now() + 900;
+                flashText = '조합이 없어요! 새 딸기판으로 바꿉니다 🍓';
+                flashUntil = performance.now() + 1050;
+                setTimeout(() => {
+                    if (gameState !== 'playing') {
+                        boardLocked = false;
+                        return;
+                    }
+                    board = generatePlayableBoard();
+                    boardLocked = false;
+                }, 800);
+            } else {
+                boardLocked = false;
             }
         }, 220);
     }
@@ -862,14 +873,24 @@
 
     function drawFlashMessage() {
         if (!flashText) return;
-        const alpha = Math.max(0, (flashUntil - performance.now()) / 900);
+        const alpha = Math.max(0, Math.min(1, (flashUntil - performance.now()) / 700));
         ctx.save();
         ctx.globalAlpha = alpha;
-        drawHudPill(676, 560, 218, 42, 'rgba(255,255,255,0.92)', '#f0d093');
-        ctx.fillStyle = '#cc5578';
-        ctx.font = 'bold 18px Malgun Gothic';
-        ctx.textAlign = 'center';
-        ctx.fillText(flashText, 785, 587);
+
+        const isLongNotice = flashText.length > 10;
+        if (isLongNotice) {
+            drawHudPill(155, 402, 510, 58, 'rgba(255,255,255,0.96)', '#efb9ca');
+            ctx.fillStyle = '#c9476d';
+            ctx.font = 'bold 19px Malgun Gothic';
+            ctx.textAlign = 'center';
+            ctx.fillText(flashText, 410, 438);
+        } else {
+            drawHudPill(676, 560, 218, 42, 'rgba(255,255,255,0.92)', '#f0d093');
+            ctx.fillStyle = '#cc5578';
+            ctx.font = 'bold 18px Malgun Gothic';
+            ctx.textAlign = 'center';
+            ctx.fillText(flashText, 785, 587);
+        }
         ctx.restore();
     }
 
