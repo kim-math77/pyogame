@@ -174,10 +174,10 @@
                 </div>
                 <h3 style="margin:10px 0 4px;">난이도 선택</h3>
                 <div style="display:flex; gap: 10px; flex-wrap: wrap; justify-content: center; padding: 0 20px;">
-                    <button class="btn btn-diff" id="btnDiffEasy">쉬움 (3개, 느림)</button>
-                    <button class="btn btn-diff" style="background:#e67e22" id="btnDiffNormal">보통 (5개, 느림)</button>
-                    <button class="btn btn-diff" style="background:#e74c3c" id="btnDiffHard">어려움 (5개, 빠름)</button>
-                    <button class="btn btn-diff" style="background:#8e44ad" id="btnDiffExtreme">극악 (7개, 매우 빠름)</button>
+                    <button class="btn btn-diff" id="btnDiffEasy">쉬움 (3~4개, 느림)</button>
+                    <button class="btn btn-diff" style="background:#e67e22" id="btnDiffNormal">보통 (4~5개, 느림)</button>
+                    <button class="btn btn-diff" style="background:#e74c3c" id="btnDiffHard">어려움 (5~6개, 빠름)</button>
+                    <button class="btn btn-diff" style="background:#8e44ad" id="btnDiffExtreme">극악 (6~7개, 매우 빠름)</button>
                 </div>
                 <button class="btn start-btn" id="btnMonsterStart">▶ 게임 시작</button>
             </div>
@@ -375,32 +375,63 @@
     monsterImages.mode.src = "monster_mode.png";
     
     function generateData(type, count) {
-        let arr = []; let targetAnswer = 0;
+        let arr = [];
+        let targetAnswer = 0;
+
         if (type === 'mean') {
-            let sum = 0;
-            for (let i = 0; i < count - 1; i++) { let n = Math.floor(Math.random() * 9) + 1; arr.push(n); sum += n; }
-            let remainder = sum % count; let needed = (count - remainder) % count;
-            if (needed === 0) needed = count;
-            arr.push(needed); targetAnswer = (sum + needed) / count;
-        } else if (type === 'median') { 
-            for (let i = 0; i < count; i++) arr.push(Math.floor(Math.random() * 19) + 1);
-            let sorted = [...arr].sort((a,b)=>a-b); targetAnswer = sorted[Math.floor(count/2)];
-        } else if (type === 'mode') { 
-            let modeVal = Math.floor(Math.random() * 9) + 1; arr.push(modeVal, modeVal); 
+            // 평균은 정수 또는 소수 첫째 자리까지만 나오도록 자료를 생성합니다.
+            for (let attempt = 0; attempt < 300; attempt++) {
+                arr = Array.from({ length: count }, () => Math.floor(Math.random() * 9) + 1);
+                const sum = arr.reduce((a, b) => a + b, 0);
+                const mean = sum / count;
+
+                if (Number.isInteger(mean * 10)) {
+                    targetAnswer = Math.round(mean * 10) / 10;
+                    break;
+                }
+            }
+
+            // 드문 예외 상황에서는 평균이 정수가 되도록 보정합니다.
+            if (!Number.isInteger(targetAnswer * 10)) {
+                const target = Math.floor(Math.random() * 7) + 2;
+                arr = Array(count).fill(target);
+                targetAnswer = target;
+            }
+
+        } else if (type === 'median') {
+            for (let i = 0; i < count; i++) {
+                arr.push(Math.floor(Math.random() * 19) + 1);
+            }
+
+            const sorted = [...arr].sort((a, b) => a - b);
+            if (count % 2 === 1) {
+                targetAnswer = sorted[Math.floor(count / 2)];
+            } else {
+                targetAnswer = (sorted[count / 2 - 1] + sorted[count / 2]) / 2;
+            }
+            targetAnswer = Math.round(targetAnswer * 10) / 10;
+
+        } else if (type === 'mode') {
+            let modeVal = Math.floor(Math.random() * 9) + 1;
+            arr.push(modeVal, modeVal);
+
             while (arr.length < count) {
                 let n = Math.floor(Math.random() * 15) + 1;
                 if (n !== modeVal && !arr.includes(n)) arr.push(n);
             }
-            arr.sort(() => Math.random() - 0.5); targetAnswer = modeVal;
+
+            arr.sort(() => Math.random() - 0.5);
+            targetAnswer = modeVal;
         }
+
         return { data: arr, answer: targetAnswer };
     }
 
     function startMonsterGame(diff) {
-        if(diff === 'easy') currentDifficulty = { count: 3, speedMulti: 0.5 };
-        else if(diff === 'normal') currentDifficulty = { count: 5, speedMulti: 0.5 };
-        else if(diff === 'hard') currentDifficulty = { count: 5, speedMulti: 1.0 };
-        else if(diff === 'extreme') currentDifficulty = { count: 7, speedMulti: 1.1 };
+        if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, speedMulti: 0.5 };
+        else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, speedMulti: 0.5 };
+        else if(diff === 'hard') currentDifficulty = { minCount: 5, maxCount: 6, speedMulti: 1.0 };
+        else if(diff === 'extreme') currentDifficulty = { minCount: 6, maxCount: 7, speedMulti: 1.1 };
 
         document.getElementById("menuScreen").style.display = "none";
         document.getElementById("stage1UI").style.display = "flex";
@@ -439,9 +470,9 @@
             { type: 'mode', label: '최빈값' }
         ];
         const selected = types[Math.floor(Math.random() * types.length)];
-        let count = currentDifficulty.count;
-        if (selected.type === 'median' && count % 2 === 0) count += 1;
-        
+        const count = currentDifficulty.minCount +
+            Math.floor(Math.random() * (currentDifficulty.maxCount - currentDifficulty.minCount + 1));
+
         const q = generateData(selected.type, count);
         let baseSpeed = 0.5 + Math.random() * 0.5;
 
@@ -455,12 +486,15 @@
 
     function fireCannon() {
         const inputEl = document.getElementById("answerInput");
-        const val = parseInt(inputEl.value); inputEl.value = ''; inputEl.focus();
+        const val = parseFloat(inputEl.value); inputEl.value = ''; inputEl.focus();
         if (isNaN(val)) return;
 
         let target = null; let maxY = -999;
         for(let i=0; i<monsters.length; i++) {
-            if(monsters[i].answer === val && !monsters[i].targeted && monsters[i].y > maxY) { maxY = monsters[i].y; target = monsters[i]; }
+            if(Math.abs(monsters[i].answer - val) < 0.0001 && !monsters[i].targeted && monsters[i].y > maxY) {
+                maxY = monsters[i].y;
+                target = monsters[i];
+            }
         }
         if(target) {
             target.targeted = true;
