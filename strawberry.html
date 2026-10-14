@@ -476,11 +476,37 @@
     }
 
     function generatePlayableBoard() {
-        // 세 모드 모두 시작부터 가능한 조합이 넉넉한 판만 채택합니다.
-        // evaluateBoard는 같은 조합을 진행 방향에 따라 여러 경로로 셀 수 있으므로
-        // 아래 기준은 절대적인 '정답 개수'가 아니라 보드의 조합 밀도를 보장하는 내부 기준입니다.
-        const targetCount = currentMode === 'average' ? 100 : (currentMode === 'median' ? 1400 : 900);
-        const attempts = currentMode === 'average' ? 260 : 140;
+        // 평균 게임은 2개짜리만 찾게 되는 현상을 줄이기 위해
+        // 3개짜리 평균 5 조합이 2개짜리보다 더 풍부한 판을 우선 채택합니다.
+        if (currentMode === 'average') {
+            let bestCandidate = null;
+            let bestScore = -Infinity;
+
+            for (let attempt = 0; attempt < 420; attempt++) {
+                const boardTry = Array.from({ length: ROWS }, () =>
+                    Array.from({ length: COLS }, () => randomBoardValue())
+                );
+
+                const counts = countAverageCombosByLength(boardTry);
+                const total = counts.two + counts.three;
+                // 목표는 대략 2개 : 3개 = 4 : 6 이상. 3개 조합을 더 높게 평가합니다.
+                const threeRatio = total > 0 ? counts.three / total : 0;
+                const score = counts.three * 2.2 + counts.two * 0.7;
+
+                if (counts.three >= 70 && total >= 105 && threeRatio >= 0.58) {
+                    return boardTry;
+                }
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestCandidate = boardTry;
+                }
+            }
+            return bestCandidate;
+        }
+
+        // 중앙값·최빈값은 기존처럼 가능한 조합이 넉넉한 판을 채택합니다.
+        const targetCount = currentMode === 'median' ? 1400 : 900;
+        const attempts = 140;
         let bestCandidate = null;
         let bestCount = -1;
 
@@ -489,7 +515,6 @@
                 Array.from({ length: COLS }, () => randomBoardValue())
             );
 
-            // 목표치에 도달하는 순간 더 셀 필요가 없으므로 targetCount까지만 검사합니다.
             const count = evaluateBoard(boardTry, targetCount);
             if (count >= targetCount) return boardTry;
 
@@ -499,13 +524,44 @@
             }
         }
 
-        // 아주 드물게 목표치를 못 넘겨도, 시도한 판 중 조합이 가장 많은 판을 사용합니다.
         if (bestCandidate) return bestCandidate;
-
-        const fallbackBoard = Array.from({ length: ROWS }, () =>
+        return Array.from({ length: ROWS }, () =>
             Array.from({ length: COLS }, () => randomBoardValue())
         );
-        return fallbackBoard;
+    }
+
+    function countAverageCombosByLength(targetBoard) {
+        let two = 0;
+        let three = 0;
+        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                if (targetBoard[r][c] == null) continue;
+                visited[r][c] = true;
+                dfs(r, c, [targetBoard[r][c]]);
+                visited[r][c] = false;
+            }
+        }
+
+        // 같은 경로가 반대 방향으로도 세어지므로 두 수치는 비교용 내부 지표로 사용합니다.
+        return { two, three };
+
+        function dfs(r, c, values) {
+            if (values.length === 2 && values[0] + values[1] === 10) two++;
+            if (values.length === 3 && values[0] + values[1] + values[2] === 15) {
+                three++;
+                return;
+            }
+            if (values.length >= 3) return;
+
+            for (const [nr, nc] of getLogicalNeighbors(targetBoard, r, c)) {
+                if (visited[nr][nc]) continue;
+                visited[nr][nc] = true;
+                dfs(nr, nc, [...values, targetBoard[nr][nc]]);
+                visited[nr][nc] = false;
+            }
+        }
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {

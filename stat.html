@@ -428,10 +428,10 @@
     }
 
     function startMonsterGame(diff) {
-        if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, speedMulti: 0.5 };
-        else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, speedMulti: 0.5 };
-        else if(diff === 'hard') currentDifficulty = { minCount: 5, maxCount: 6, speedMulti: 1.0 };
-        else if(diff === 'extreme') currentDifficulty = { minCount: 6, maxCount: 7, speedMulti: 1.1 };
+        if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, minSpeed: 0.2, maxSpeed: 0.3 };
+        else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, minSpeed: 0.3, maxSpeed: 0.4 };
+        else if(diff === 'hard') currentDifficulty = { minCount: 5, maxCount: 6, minSpeed: 0.4, maxSpeed: 0.5 };
+        else if(diff === 'extreme') currentDifficulty = { minCount: 6, maxCount: 7, minSpeed: 0.5, maxSpeed: 0.6 };
 
         document.getElementById("menuScreen").style.display = "none";
         document.getElementById("stage1UI").style.display = "flex";
@@ -474,13 +474,14 @@
             Math.floor(Math.random() * (currentDifficulty.maxCount - currentDifficulty.minCount + 1));
 
         const q = generateData(selected.type, count);
-        let baseSpeed = 0.5 + Math.random() * 0.5;
+        const baseSpeed = currentDifficulty.minSpeed +
+            Math.random() * (currentDifficulty.maxSpeed - currentDifficulty.minSpeed);
 
         monsters.push({
             id: Math.random().toString(36).substr(2, 9),
             x: 50 + Math.random() * (canvas.width - 100), y: -50,
             monsterType: selected.type, label: selected.label, dataStr: q.data.join(', '), answer: q.answer,
-            speed: baseSpeed * currentDifficulty.speedMulti, targeted: false
+            speed: baseSpeed, targeted: false
         });
     }
 
