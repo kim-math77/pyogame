@@ -479,7 +479,7 @@
         // 세 모드 모두 시작부터 가능한 조합이 넉넉한 판만 채택합니다.
         // evaluateBoard는 같은 조합을 진행 방향에 따라 여러 경로로 셀 수 있으므로
         // 아래 기준은 절대적인 '정답 개수'가 아니라 보드의 조합 밀도를 보장하는 내부 기준입니다.
-        const targetCount = currentMode === 'average' ? 100 : (currentMode === 'median' ? 1400 : 2500);
+        const targetCount = currentMode === 'average' ? 100 : (currentMode === 'median' ? 1400 : 900);
         const attempts = currentMode === 'average' ? 260 : 140;
         let bestCandidate = null;
         let bestCount = -1;
@@ -980,8 +980,8 @@
     function randomBoardValue() {
         if (currentMode === 'median') return randInt(1, 9);
         if (currentMode === 'mode') {
-            // 최빈값 게임은 5가 충분히 보이도록 약 28% 확률로 배치합니다.
-            if (Math.random() < 0.28) return 5;
+            // 최빈값 게임은 5가 조금 더 자주 보이되 과하게 몰리지 않도록 약 22% 확률로 배치합니다.
+            if (Math.random() < 0.22) return 5;
             const others = [1,2,3,4,6,7,8,9];
             return others[Math.floor(Math.random() * others.length)];
         }
