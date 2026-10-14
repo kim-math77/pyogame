@@ -149,7 +149,7 @@
     }
     .mode-grid {
         display:grid;
-        grid-template-columns: repeat(2, minmax(0,1fr));
+        grid-template-columns: repeat(3, minmax(0,1fr));
         gap:16px;
         margin-top:14px;
     }
@@ -166,9 +166,11 @@
     }
     .mode-choice:hover { transform:translateY(-4px); box-shadow:0 12px 22px rgba(165,102,127,.2); }
     .mode-choice.median { background:linear-gradient(180deg,#f5fbff 0%,#e3f2ff 100%); border-color:#bdd8ec; }
+    .mode-choice.mode { background:linear-gradient(180deg,#f6fff8 0%,#e3f5e8 100%); border-color:#b9d9c1; }
     .mode-choice .emoji { font-size:42px; display:block; margin-bottom:8px; }
     .mode-choice strong { display:block; font-size:22px; color:#c74870; margin-bottom:6px; }
     .mode-choice.median strong { color:#4e7fa8; }
+    .mode-choice.mode strong { color:#4f8b63; }
     .mode-choice span { font-size:14px; line-height:1.55; }
     .menu-back-btn {
         margin-top:12px; border:none; border-radius:12px; padding:10px 18px; cursor:pointer;
@@ -199,7 +201,12 @@
                         <button class="mode-choice median" id="btnMedianMode">
                             <span class="emoji">🍓</span>
                             <strong>중앙값 딸기게임</strong>
-                            <span>2~3개의 딸기를 이어<br>중앙값이 5가 되면 제거!</span>
+                            <span>3~5개의 딸기를 이어<br>중앙값이 5가 되면 제거!</span>
+                        </button>
+                        <button class="mode-choice mode" id="btnModeMode">
+                            <span class="emoji">🍓</span>
+                            <strong>최빈값 딸기게임</strong>
+                            <span>3~5개의 딸기를 이어<br>최빈값이 5가 되면 제거!</span>
                         </button>
                     </div>
                 </div>
@@ -222,6 +229,7 @@
                     <div class="result-score" id="finalScoreText">이번 점수: 0점</div>
                     <div class="best-line" id="bestResultText">최고 기록: 0점</div>
                     <button class="retry-btn" id="btnRetryGame">다시 도전하기</button>
+                    <button class="menu-back-btn" id="btnResultBackToModes">돌아가기</button>
                     <div class="small-note">최고 기록은 이 기기에서 자동으로 저장됩니다.</div>
                 </div>
             </div>
@@ -256,7 +264,9 @@
     const btnRetryGame = document.getElementById('btnRetryGame');
     const btnAverageMode = document.getElementById('btnAverageMode');
     const btnMedianMode = document.getElementById('btnMedianMode');
+    const btnModeMode = document.getElementById('btnModeMode');
     const btnBackToModes = document.getElementById('btnBackToModes');
+    const btnResultBackToModes = document.getElementById('btnResultBackToModes');
     const gameModeTitle = document.getElementById('gameModeTitle');
     const gameGuide = document.getElementById('gameGuide');
     const hintBox = document.getElementById('hintBox');
@@ -293,7 +303,9 @@
 
     btnAverageMode.addEventListener('click', () => chooseMode('average'));
     btnMedianMode.addEventListener('click', () => chooseMode('median'));
+    btnModeMode.addEventListener('click', () => chooseMode('mode'));
     btnBackToModes.addEventListener('click', showModeMenu);
+    btnResultBackToModes.addEventListener('click', showModeMenu);
     btnStartGame.addEventListener('click', startGame);
     btnRetryGame.addEventListener('click', () => {
         resultOverlay.style.display = 'none';
@@ -307,8 +319,16 @@
 
     function chooseMode(mode) {
         currentMode = mode;
-        BEST_KEY = mode === 'average' ? 'strawberryAverageBestScore' : 'strawberryMedianBestScore';
-        SCORE_POP_KEY = mode === 'average' ? 'strawberryAverageLastScore' : 'strawberryMedianLastScore';
+        if (mode === 'average') {
+            BEST_KEY = 'strawberryAverageBestScore';
+            SCORE_POP_KEY = 'strawberryAverageLastScore';
+        } else if (mode === 'median') {
+            BEST_KEY = 'strawberryMedianBestScore';
+            SCORE_POP_KEY = 'strawberryMedianLastScore';
+        } else {
+            BEST_KEY = 'strawberryModeBestScore';
+            SCORE_POP_KEY = 'strawberryModeLastScore';
+        }
         bestScore = Number(localStorage.getItem(BEST_KEY) || 0);
         updateBestTexts();
 
@@ -321,15 +341,24 @@
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
                 ⑤ 가능한 조합이 모두 사라지면 <strong>새 딸기판</strong>이 자동으로 준비됩니다.`;
             hintBox.innerHTML = `<strong>빠른 힌트</strong><br>2개 → 합이 10<br>3개 → 합이 15`;
-        } else {
+        } else if (mode === 'median') {
             gameModeTitle.textContent = '🍓 중앙값 딸기게임';
             gameGuide.innerHTML = `<strong>게임 방법</strong><br>
-                ① 숫자를 보고 <strong>서로 이웃한 딸기 2~3개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ① 숫자를 보고 <strong>서로 이웃한 딸기 3~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
                 ② 선택한 수를 크기순으로 놓았을 때 <strong>중앙값이 5</strong>이면 딸기가 사라집니다.<br>
                 ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
                 ⑤ 가능한 조합이 모두 사라지면 <strong>새 딸기판</strong>이 자동으로 준비됩니다.`;
-            hintBox.innerHTML = `<strong>중앙값 힌트</strong><br>2개를 고르면 <strong>두 수의 평균</strong>을 구하고, 3개를 고르면 <strong>크기순으로 나열했을 때 가운데 수</strong>를 확인하세요.<br>예) 4, 6 → 중앙값 5 / 2, 5, 8 → 중앙값 5`;
+            hintBox.innerHTML = `<strong>중앙값 힌트</strong><br>3개·5개 → 크기순으로 놓았을 때 가운데 수가 5<br>4개 → 가운데 두 수의 평균이 5<br>예) 2,5,8 / 1,4,6,9 / 1,3,5,7,9`;
+        } else {
+            gameModeTitle.textContent = '🍓 최빈값 딸기게임';
+            gameGuide.innerHTML = `<strong>게임 방법</strong><br>
+                ① 숫자를 보고 <strong>서로 이웃한 딸기 3~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ② 선택한 수 중 <strong>5가 유일한 최빈값</strong>이면 딸기가 사라집니다.<br>
+                ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
+                ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
+                ⑤ 가능한 조합이 모두 사라지면 <strong>새 딸기판</strong>이 자동으로 준비됩니다.`;
+            hintBox.innerHTML = `<strong>최빈값 힌트</strong><br>5가 다른 어떤 수보다 더 많이 나와야 합니다.<br>예) 5,5,2 → 성공 / 5,5,2,2 → 공동 최빈값이라 실패`;
         }
         modeOverlay.style.display = 'none';
         resultOverlay.style.display = 'none';
@@ -350,16 +379,39 @@
         modeOverlay.style.display = 'flex';
     }
 
+    function getMinSelection() {
+        return currentMode === 'average' ? 2 : 3;
+    }
+
+    function getMaxSelection() {
+        return currentMode === 'average' ? 3 : 5;
+    }
+
     function isValidSelectionValues(values) {
-        if (values.length < 2 || values.length > 4) return false;
+        const min = getMinSelection();
+        const max = getMaxSelection();
+        if (values.length < min || values.length > max) return false;
+
         if (currentMode === 'average') {
             const sum = values.reduce((a,b) => a+b, 0);
             return sum === values.length * 5;
         }
-        const sorted = [...values].sort((a,b) => a-b);
-        const n = sorted.length;
-        if (n % 2 === 1) return sorted[Math.floor(n/2)] === 5;
-        return sorted[n/2 - 1] + sorted[n/2] === 10;
+
+        if (currentMode === 'median') {
+            const sorted = [...values].sort((a,b) => a-b);
+            const n = sorted.length;
+            if (n % 2 === 1) return sorted[Math.floor(n/2)] === 5;
+            return sorted[n/2 - 1] + sorted[n/2] === 10;
+        }
+
+        const counts = new Map();
+        for (const v of values) counts.set(v, (counts.get(v) || 0) + 1);
+        const fiveCount = counts.get(5) || 0;
+        if (fiveCount === 0) return false;
+        for (const [value, count] of counts.entries()) {
+            if (value !== 5 && count >= fiveCount) return false;
+        }
+        return true;
     }
 
     function updateBestTexts() {
@@ -415,16 +467,20 @@
     }
 
     function generatePlayableBoard() {
-        let candidate = null;
-        for (let attempt = 0; attempt < 240; attempt++) {
+        let bestCandidate = null;
+        let bestCount = -1;
+        const minTarget = currentMode === 'average' ? 28 : (currentMode === 'median' ? 34 : 24);
+        const maxTarget = currentMode === 'average' ? 90 : (currentMode === 'median' ? 120 : 100);
+        for (let attempt = 0; attempt < 180; attempt++) {
             const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
-            const count = evaluateBoard(boardTry, 150);
-            if (count >= 220 && count <= 360) {
-                return boardTry;
+            const count = evaluateBoard(boardTry, maxTarget + 1);
+            if (count >= minTarget && count <= maxTarget) return boardTry;
+            if (count > bestCount) {
+                bestCount = count;
+                bestCandidate = boardTry;
             }
-            candidate = boardTry;
         }
-        return candidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
+        return bestCandidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {
@@ -446,7 +502,7 @@
                 count++;
                 if (count >= limit) return;
             }
-            if (length === 3 || count >= limit) return;
+            if (length === getMaxSelection() || count >= limit) return;
             const neighbors = getLogicalNeighbors(boardRef, r, c);
             for (const [nr, nc] of neighbors) {
                 if (visited[nr][nc]) continue;
@@ -475,7 +531,7 @@
 
         function dfsFind(r, c, length, sum, pathValues) {
             if (length >= 2 && isValidSelectionValues(pathValues)) return true;
-            if (length === 3) return false;
+            if (length === getMaxSelection()) return false;
             const neighbors = getLogicalNeighbors(targetBoard, r, c);
             for (const [nr, nc] of neighbors) {
                 if (visited[nr][nc]) continue;
@@ -537,7 +593,7 @@
         }
 
         if (selection.some(pos => pos.row === row && pos.col === col)) return;
-        if (selection.length >= 3) return;
+        if (selection.length >= getMaxSelection()) return;
         if (isLogicalNeighbor(last, { row, col })) {
             selection.push({ row, col });
         }
@@ -550,7 +606,7 @@
             selection = [];
             return;
         }
-        if (selection.length >= 2 && selection.length <= 3) {
+        if (selection.length >= getMinSelection() && selection.length <= getMaxSelection()) {
             const values = selection.map(pos => board[pos.row][pos.col]);
             if (isValidSelectionValues(values)) {
                 applySuccess(selection);
@@ -681,7 +737,7 @@
 
         ctx.fillStyle = '#9a7b88';
         ctx.font = 'bold 17px Malgun Gothic';
-        ctx.fillText(currentMode === 'average' ? '평균 = 5' : '중앙값 = 5', hudX + hudW / 2, 535);
+        ctx.fillText(currentMode === 'average' ? '평균 = 5' : (currentMode === 'median' ? '중앙값 = 5' : '최빈값 = 5'), hudX + hudW / 2, 535);
     }
 
     function drawHudPill(x, y, w, h, fill, stroke) {
@@ -867,6 +923,12 @@
 
     function randomBoardValue() {
         if (currentMode === 'median') return randInt(1, 9);
+        if (currentMode === 'mode') {
+            // 최빈값 게임은 5가 충분히 보이도록 약 28% 확률로 배치합니다.
+            if (Math.random() < 0.28) return 5;
+            const others = [1,2,3,4,6,7,8,9];
+            return others[Math.floor(Math.random() * others.length)];
+        }
         const values = [1,2,3,4,6,7,8,9];
         return values[Math.floor(Math.random() * values.length)];
     }
