@@ -417,14 +417,14 @@
     function generatePlayableBoard() {
         let candidate = null;
         for (let attempt = 0; attempt < 240; attempt++) {
-            const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomStrawberryNumber()));
+            const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
             const count = evaluateBoard(boardTry, 150);
             if (count >= 220 && count <= 360) {
                 return boardTry;
             }
             candidate = boardTry;
         }
-        return candidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomStrawberryNumber()));
+        return candidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {
