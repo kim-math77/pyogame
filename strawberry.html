@@ -500,9 +500,12 @@
         }
 
         // 아주 드물게 목표치를 못 넘겨도, 시도한 판 중 조합이 가장 많은 판을 사용합니다.
-        return bestCandidate || Array.from({ length: ROWS }, () =>
+        if (bestCandidate) return bestCandidate;
+
+        const fallbackBoard = Array.from({ length: ROWS }, () =>
             Array.from({ length: COLS }, () => randomBoardValue())
         );
+        return fallbackBoard;
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {
@@ -661,7 +664,13 @@
                 boardLocked = false;
                 return;
             }
-            if (!hasAnyValidMove(board)) {
+            const noFiveLeftInMedian =
+                currentMode === 'median' &&
+                !board.some(row => row.some(value => value === 5));
+
+            if (noFiveLeftInMedian) {
+                scheduleNewBoard('5가 모두 사라졌어요! 새 딸기판으로 바꿉니다 🍓');
+            } else if (!hasAnyValidMove(board)) {
                 scheduleNewBoard();
             } else {
                 boardLocked = false;
@@ -669,13 +678,13 @@
         }, 220);
     }
 
-    function scheduleNewBoard() {
+    function scheduleNewBoard(message = '조합이 없어요! 새 딸기판으로 바꿉니다 🍓') {
         if (reshufflePending || gameState !== 'playing') return;
         reshufflePending = true;
         boardLocked = true;
         dragging = false;
         selection = [];
-        flashText = '조합이 없어요! 새 딸기판으로 바꿉니다 🍓';
+        flashText = message;
         flashUntil = performance.now() + 1200;
 
         setTimeout(() => {
