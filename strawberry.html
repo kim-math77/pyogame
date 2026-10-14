@@ -163,7 +163,7 @@
                     <h2>🍓 딸기 게임</h2>
                     <div class="guide">
                         <strong>게임 방법</strong><br>
-                        ① 딸기에 적힌 숫자를 보고 <strong>서로 이웃한 딸기 2~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                        ① 딸기에 적힌 숫자를 보고 <strong>서로 이웃한 딸기 2~4개</strong>를 손가락으로 드래그해 선택하세요.<br>
                         ② 선택한 숫자들의 <strong>평균이 5</strong>이면 딸기가 사라집니다.<br>
                         ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                         ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
@@ -174,7 +174,6 @@
                         2개를 고르면 합이 10<br>
                         3개를 고르면 합이 15<br>
                         4개를 고르면 합이 20<br>
-                        5개를 고르면 합이 25
                     </div>
                     <div class="best-line" id="bestStartText">최고 기록: 0점</div>
                     <button class="start-btn" id="btnStartGame">▶ 게임 시작</button>
@@ -316,7 +315,7 @@
         for (let attempt = 0; attempt < 240; attempt++) {
             const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomStrawberryNumber()));
             const count = evaluateBoard(boardTry, 150);
-            if (count >= 36 && count <= 150) {
+            if (count >= 220 && count <= 360) {
                 return boardTry;
             }
             candidate = boardTry;
@@ -343,7 +342,7 @@
                 count++;
                 if (count >= limit) return;
             }
-            if (length === 5 || count >= limit) return;
+            if (length === 4 || count >= limit) return;
             const neighbors = getLogicalNeighbors(boardRef, r, c);
             for (const [nr, nc] of neighbors) {
                 if (visited[nr][nc]) continue;
@@ -372,7 +371,7 @@
 
         function dfsFind(r, c, length, sum) {
             if (length >= 2 && sum === length * 5) return true;
-            if (length === 5) return false;
+            if (length === 4) return false;
             const neighbors = getLogicalNeighbors(targetBoard, r, c);
             for (const [nr, nc] of neighbors) {
                 if (visited[nr][nc]) continue;
@@ -434,7 +433,7 @@
         }
 
         if (selection.some(pos => pos.row === row && pos.col === col)) return;
-        if (selection.length >= 5) return;
+        if (selection.length >= 4) return;
         if (isLogicalNeighbor(last, { row, col })) {
             selection.push({ row, col });
         }
@@ -447,7 +446,7 @@
             selection = [];
             return;
         }
-        if (selection.length >= 2 && selection.length <= 5) {
+        if (selection.length >= 2 && selection.length <= 4) {
             const sum = selection.reduce((acc, pos) => acc + board[pos.row][pos.col], 0);
             if (sum === selection.length * 5) {
                 applySuccess(selection);
