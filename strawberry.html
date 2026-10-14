@@ -194,12 +194,12 @@
                         <button class="mode-choice" id="btnAverageMode">
                             <span class="emoji">🍓</span>
                             <strong>평균 딸기게임</strong>
-                            <span>2~4개의 딸기를 이어<br>평균이 5가 되면 제거!</span>
+                            <span>2~3개의 딸기를 이어<br>평균이 5가 되면 제거!</span>
                         </button>
                         <button class="mode-choice median" id="btnMedianMode">
                             <span class="emoji">🍓</span>
                             <strong>중앙값 딸기게임</strong>
-                            <span>2~4개의 딸기를 이어<br>중앙값이 5가 되면 제거!</span>
+                            <span>2~3개의 딸기를 이어<br>중앙값이 5가 되면 제거!</span>
                         </button>
                     </div>
                 </div>
@@ -315,21 +315,21 @@
         if (mode === 'average') {
             gameModeTitle.textContent = '🍓 평균 딸기게임';
             gameGuide.innerHTML = `<strong>게임 방법</strong><br>
-                ① 숫자를 보고 <strong>서로 이웃한 딸기 2~4개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ① 숫자를 보고 <strong>서로 이웃한 딸기 2~3개</strong>를 손가락으로 드래그해 선택하세요.<br>
                 ② 선택한 숫자들의 <strong>평균이 5</strong>이면 딸기가 사라집니다.<br>
                 ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
                 ⑤ 가능한 조합이 모두 사라지면 <strong>새 딸기판</strong>이 자동으로 준비됩니다.`;
-            hintBox.innerHTML = `<strong>빠른 힌트</strong><br>2개 → 합이 10<br>3개 → 합이 15<br>4개 → 합이 20`;
+            hintBox.innerHTML = `<strong>빠른 힌트</strong><br>2개 → 합이 10<br>3개 → 합이 15`;
         } else {
             gameModeTitle.textContent = '🍓 중앙값 딸기게임';
             gameGuide.innerHTML = `<strong>게임 방법</strong><br>
-                ① 숫자를 보고 <strong>서로 이웃한 딸기 2~4개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ① 숫자를 보고 <strong>서로 이웃한 딸기 2~3개</strong>를 손가락으로 드래그해 선택하세요.<br>
                 ② 선택한 수를 크기순으로 놓았을 때 <strong>중앙값이 5</strong>이면 딸기가 사라집니다.<br>
                 ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
                 ⑤ 가능한 조합이 모두 사라지면 <strong>새 딸기판</strong>이 자동으로 준비됩니다.`;
-            hintBox.innerHTML = `<strong>중앙값 힌트</strong><br>2개·4개처럼 자료가 짝수 개이면 <strong>가운데 두 수의 평균</strong>을 구하세요.<br>예) 4, 6 → 중앙값 5`;
+            hintBox.innerHTML = `<strong>중앙값 힌트</strong><br>2개를 고르면 <strong>두 수의 평균</strong>을 구하고, 3개를 고르면 <strong>크기순으로 나열했을 때 가운데 수</strong>를 확인하세요.<br>예) 4, 6 → 중앙값 5 / 2, 5, 8 → 중앙값 5`;
         }
         modeOverlay.style.display = 'none';
         resultOverlay.style.display = 'none';
@@ -446,7 +446,7 @@
                 count++;
                 if (count >= limit) return;
             }
-            if (length === 4 || count >= limit) return;
+            if (length === 3 || count >= limit) return;
             const neighbors = getLogicalNeighbors(boardRef, r, c);
             for (const [nr, nc] of neighbors) {
                 if (visited[nr][nc]) continue;
@@ -475,7 +475,7 @@
 
         function dfsFind(r, c, length, sum, pathValues) {
             if (length >= 2 && isValidSelectionValues(pathValues)) return true;
-            if (length === 4) return false;
+            if (length === 3) return false;
             const neighbors = getLogicalNeighbors(targetBoard, r, c);
             for (const [nr, nc] of neighbors) {
                 if (visited[nr][nc]) continue;
@@ -537,7 +537,7 @@
         }
 
         if (selection.some(pos => pos.row === row && pos.col === col)) return;
-        if (selection.length >= 4) return;
+        if (selection.length >= 3) return;
         if (isLogicalNeighbor(last, { row, col })) {
             selection.push({ row, col });
         }
@@ -550,7 +550,7 @@
             selection = [];
             return;
         }
-        if (selection.length >= 2 && selection.length <= 4) {
+        if (selection.length >= 2 && selection.length <= 3) {
             const values = selection.map(pos => board[pos.row][pos.col]);
             if (isValidSelectionValues(values)) {
                 applySuccess(selection);
