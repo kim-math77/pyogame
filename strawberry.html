@@ -476,20 +476,33 @@
     }
 
     function generatePlayableBoard() {
+        // 세 모드 모두 시작부터 가능한 조합이 넉넉한 판만 채택합니다.
+        // evaluateBoard는 같은 조합을 진행 방향에 따라 여러 경로로 셀 수 있으므로
+        // 아래 기준은 절대적인 '정답 개수'가 아니라 보드의 조합 밀도를 보장하는 내부 기준입니다.
+        const targetCount = currentMode === 'average' ? 100 : (currentMode === 'median' ? 1400 : 2500);
+        const attempts = currentMode === 'average' ? 260 : 140;
         let bestCandidate = null;
         let bestCount = -1;
-        const minTarget = currentMode === 'average' ? 28 : (currentMode === 'median' ? 34 : 24);
-        const maxTarget = currentMode === 'average' ? 90 : (currentMode === 'median' ? 120 : 100);
-        for (let attempt = 0; attempt < 180; attempt++) {
-            const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
-            const count = evaluateBoard(boardTry, maxTarget + 1);
-            if (count >= minTarget && count <= maxTarget) return boardTry;
+
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            const boardTry = Array.from({ length: ROWS }, () =>
+                Array.from({ length: COLS }, () => randomBoardValue())
+            );
+
+            // 목표치에 도달하는 순간 더 셀 필요가 없으므로 targetCount까지만 검사합니다.
+            const count = evaluateBoard(boardTry, targetCount);
+            if (count >= targetCount) return boardTry;
+
             if (count > bestCount) {
                 bestCount = count;
                 bestCandidate = boardTry;
             }
         }
-        return bestCandidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomBoardValue()));
+
+        // 아주 드물게 목표치를 못 넘겨도, 시도한 판 중 조합이 가장 많은 판을 사용합니다.
+        return bestCandidate || Array.from({ length: ROWS }, () =>
+            Array.from({ length: COLS }, () => randomBoardValue())
+        );
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {
