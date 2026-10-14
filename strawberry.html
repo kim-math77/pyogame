@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>딸기 게임</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Malgun Gothic', sans-serif;
+        background: linear-gradient(-45deg, #ffe6ef, #fff5da, #d9f6ee, #e8f0ff);
+        background-size: 400% 400%;
+        animation: gradientBG 16s ease infinite;
+        color: #4f4a5a;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 18px;
+    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .container {
+        width: min(900px, 100%);
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(255,255,255,0.85);
+        border-radius: 26px;
+        padding: 16px 20px 22px;
+        box-shadow: 0 16px 40px rgba(113, 103, 132, 0.18);
+        backdrop-filter: blur(5px);
+        position: relative;
+    }
+    h1 {
+        margin: 6px 0 12px;
+        text-align: center;
+        font-size: 30px;
+        color: #ce4971;
+        text-shadow: 0 1px 0 rgba(255,255,255,.9);
+    }
+    .top-buttons {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 8px;
+    }
+    .back-btn {
+        display: inline-block;
+        background: linear-gradient(180deg, #98b4c8 0%, #7d9caf 100%);
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 12px;
+        padding: 10px 18px;
+        box-shadow: 0 6px 14px rgba(75, 98, 118, 0.18);
+    }
+    .game-wrap {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    #gameCanvas {
+        width: min(820px, 100%);
+        max-width: 820px;
+        aspect-ratio: 820 / 760;
+        border-radius: 20px;
+        border: 4px solid #f0bfd0;
+        background: linear-gradient(180deg, #fff9fc 0%, #fffef7 56%, #f4fff8 100%);
+        box-shadow: inset 0 0 24px rgba(255,255,255,.9), 0 8px 20px rgba(112, 129, 148, 0.16);
+        touch-action: none;
+    }
+    .overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 250, 252, 0.86);
+        z-index: 20;
+        padding: 24px;
+    }
+    .panel {
+        width: min(560px, 92%);
+        background: linear-gradient(180deg, rgba(255,252,244,0.98) 0%, rgba(255,241,246,0.98) 100%);
+        border: 1px solid #f0c4d2;
+        border-radius: 24px;
+        box-shadow: 0 12px 28px rgba(122, 101, 123, 0.16);
+        padding: 24px 24px 20px;
+        text-align: center;
+        color: #503d4e;
+    }
+    .panel h2 {
+        margin: 4px 0 14px;
+        color: #cc476f;
+        font-size: 32px;
+    }
+    .guide {
+        text-align: left;
+        line-height: 1.82;
+        background: rgba(255,255,255,0.8);
+        border: 1px solid #f0d6de;
+        border-radius: 18px;
+        padding: 14px 18px;
+        font-size: 16px;
+        box-shadow: inset 0 0 10px rgba(255,255,255,0.85);
+    }
+    .guide strong { color: #bf3f66; }
+    .hint-box {
+        margin-top: 12px;
+        background: linear-gradient(180deg, #eefaf6 0%, #f7fffb 100%);
+        border: 1px solid #cbe6db;
+        border-radius: 16px;
+        padding: 10px 14px;
+        text-align: left;
+        line-height: 1.75;
+        font-size: 15px;
+    }
+    .start-btn, .retry-btn {
+        margin-top: 16px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #f1658c 0%, #d94972 100%);
+        color: white;
+        font-size: 22px;
+        font-weight: bold;
+        padding: 14px 36px;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(213, 73, 114, 0.26);
+    }
+    .result-score {
+        font-size: 22px;
+        margin: 10px 0 6px;
+        color: #5a4258;
+        font-weight: bold;
+    }
+    .best-line {
+        margin-top: 8px;
+        color: #7c5a6f;
+        font-weight: bold;
+    }
+    .small-note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #7d7683;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-buttons">
+            <a href="stat.html" class="back-btn">⬅ 뒤로 가기</a>
+        </div>
+        <h1>🍓 딸기 게임</h1>
+        <div class="game-wrap">
+            <canvas id="gameCanvas" width="820" height="760"></canvas>
+
+            <div class="overlay" id="startOverlay" style="display:flex;">
+                <div class="panel">
+                    <h2>🍓 딸기 게임</h2>
+                    <div class="guide">
+                        <strong>게임 방법</strong><br>
+                        ① 딸기에 적힌 숫자를 보고 <strong>서로 이웃한 딸기 2~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                        ② 선택한 숫자들의 <strong>평균이 5</strong>이면 딸기가 사라집니다.<br>
+                        ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
+                        ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
+                        ⑤ 가능한 조합이 모두 사라지면 <strong>새 딸기판</strong>이 자동으로 준비됩니다.
+                    </div>
+                    <div class="hint-box">
+                        <strong>빠른 힌트</strong><br>
+                        2개를 고르면 합이 10<br>
+                        3개를 고르면 합이 15<br>
+                        4개를 고르면 합이 20<br>
+                        5개를 고르면 합이 25
+                    </div>
+                    <div class="best-line" id="bestStartText">최고 기록: 0점</div>
+                    <button class="start-btn" id="btnStartGame">▶ 게임 시작</button>
+                </div>
+            </div>
+
+            <div class="overlay" id="resultOverlay">
+                <div class="panel">
+                    <h2>⏰ 시간 종료!</h2>
+                    <div class="result-score" id="finalScoreText">이번 점수: 0점</div>
+                    <div class="best-line" id="bestResultText">최고 기록: 0점</div>
+                    <button class="retry-btn" id="btnRetryGame">다시 도전하기</button>
+                    <div class="small-note">최고 기록은 이 기기에서 자동으로 저장됩니다.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+(() => {
+    const PASSWORD = '1111';
+    const AUTH_KEY = 'strawberryGameUnlocked';
+    if (sessionStorage.getItem(AUTH_KEY) !== 'true') {
+        const pwd = prompt('딸기 게임 비밀번호를 입력하세요 🔒');
+        if (pwd === PASSWORD) {
+            sessionStorage.setItem(AUTH_KEY, 'true');
+        } else {
+            alert('비밀번호가 틀렸습니다! ❌');
+            location.href = 'stat.html';
+            return;
+        }
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const startOverlay = document.getElementById('startOverlay');
+    const resultOverlay = document.getElementById('resultOverlay');
+    const bestStartText = document.getElementById('bestStartText');
+    const bestResultText = document.getElementById('bestResultText');
+    const finalScoreText = document.getElementById('finalScoreText');
+    const btnStartGame = document.getElementById('btnStartGame');
+    const btnRetryGame = document.getElementById('btnRetryGame');
+
+    const ROWS = 10;
+    const COLS = 10;
+    const CELL = 56;
+    const GAP = 8;
+    const BOARD_X = 58;
+    const BOARD_Y = 150;
+    const GAME_DURATION = 90 * 1000;
+    const BEST_KEY = 'strawberryGameBestScore';
+    const SCORE_POP_KEY = 'strawberryGameLastScore';
+
+    let board = [];
+    let selection = [];
+    let dragging = false;
+    let gameState = 'start';
+    let score = 0;
+    let bestScore = Number(localStorage.getItem(BEST_KEY) || 0);
+    let startTime = 0;
+    let endTime = 0;
+    let timeLeft = GAME_DURATION;
+    let rafId = null;
+    let particles = [];
+    let flashText = '';
+    let flashUntil = 0;
+    let boardLocked = false;
+
+    updateBestTexts();
+    renderFrame();
+    rafId = requestAnimationFrame(loop);
+
+    btnStartGame.addEventListener('click', startGame);
+    btnRetryGame.addEventListener('click', () => {
+        resultOverlay.style.display = 'none';
+        startGame();
+    });
+
+    canvas.addEventListener('pointerdown', handlePointerDown);
+    canvas.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+
+    function updateBestTexts() {
+        bestStartText.textContent = `최고 기록: ${bestScore}점`;
+        bestResultText.textContent = `최고 기록: ${bestScore}점`;
+    }
+
+    function startGame() {
+        score = 0;
+        selection = [];
+        dragging = false;
+        particles = [];
+        board = generatePlayableBoard();
+        gameState = 'playing';
+        startOverlay.style.display = 'none';
+        resultOverlay.style.display = 'none';
+        startTime = performance.now();
+        endTime = startTime + GAME_DURATION;
+        timeLeft = GAME_DURATION;
+        flashText = '시작!';
+        flashUntil = performance.now() + 900;
+        boardLocked = false;
+        renderFrame();
+    }
+
+    function endGame() {
+        if (gameState !== 'playing') return;
+        gameState = 'ended';
+        dragging = false;
+        selection = [];
+        timeLeft = 0;
+        if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem(BEST_KEY, String(bestScore));
+            updateBestTexts();
+        }
+        localStorage.setItem(SCORE_POP_KEY, String(score));
+        finalScoreText.textContent = `이번 점수: ${score}점`;
+        resultOverlay.style.display = 'flex';
+        renderFrame();
+    }
+
+    function loop(ts) {
+        updateParticles(ts);
+        if (gameState === 'playing') {
+            timeLeft = Math.max(0, endTime - ts);
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+        renderFrame();
+        rafId = requestAnimationFrame(loop);
+    }
+
+    function generatePlayableBoard() {
+        let candidate = null;
+        for (let attempt = 0; attempt < 240; attempt++) {
+            const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randInt(1, 9)));
+            const count = evaluateBoard(boardTry, 150);
+            if (count >= 36 && count <= 150) {
+                return boardTry;
+            }
+            candidate = boardTry;
+        }
+        return candidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randInt(1, 9)));
+    }
+
+    function evaluateBoard(targetBoard, limit = Infinity) {
+        let count = 0;
+        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                if (targetBoard[r][c] == null) continue;
+                visited[r][c] = true;
+                dfsCount(r, c, 1, targetBoard[r][c], visited, targetBoard);
+                visited[r][c] = false;
+                if (count >= limit) return count;
+            }
+        }
+        return count;
+
+        function dfsCount(r, c, length, sum, visited, boardRef) {
+            if (length >= 2 && sum === length * 5) {
+                count++;
+                if (count >= limit) return;
+            }
+            if (length === 5 || count >= limit) return;
+            const neighbors = getLogicalNeighbors(boardRef, r, c);
+            for (const [nr, nc] of neighbors) {
+                if (visited[nr][nc]) continue;
+                visited[nr][nc] = true;
+                dfsCount(nr, nc, length + 1, sum + boardRef[nr][nc], visited, boardRef);
+                visited[nr][nc] = false;
+                if (count >= limit) return;
+            }
+        }
+    }
+
+    function hasAnyValidMove(targetBoard) {
+        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                if (targetBoard[r][c] == null) continue;
+                visited[r][c] = true;
+                if (dfsFind(r, c, 1, targetBoard[r][c])) {
+                    visited[r][c] = false;
+                    return true;
+                }
+                visited[r][c] = false;
+            }
+        }
+        return false;
+
+        function dfsFind(r, c, length, sum) {
+            if (length >= 2 && sum === length * 5) return true;
+            if (length === 5) return false;
+            const neighbors = getLogicalNeighbors(targetBoard, r, c);
+            for (const [nr, nc] of neighbors) {
+                if (visited[nr][nc]) continue;
+                visited[nr][nc] = true;
+                if (dfsFind(nr, nc, length + 1, sum + targetBoard[nr][nc])) {
+                    visited[nr][nc] = false;
+                    return true;
+                }
+                visited[nr][nc] = false;
+            }
+            return false;
+        }
+    }
+
+    function getLogicalNeighbors(boardRef, row, col) {
+        const result = [];
+        const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+        for (const [dr, dc] of dirs) {
+            let nr = row + dr;
+            let nc = col + dc;
+            while (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+                if (boardRef[nr][nc] != null) {
+                    result.push([nr, nc]);
+                    break;
+                }
+                nr += dr;
+                nc += dc;
+            }
+        }
+        return result;
+    }
+
+    function handlePointerDown(e) {
+        if (gameState !== 'playing' || boardLocked) return;
+        const cell = getCellFromEvent(e);
+        if (!cell) return;
+        const { row, col } = cell;
+        if (board[row][col] == null) return;
+        dragging = true;
+        selection = [{ row, col }];
+        canvas.setPointerCapture?.(e.pointerId);
+    }
+
+    function handlePointerMove(e) {
+        if (!dragging || gameState !== 'playing' || boardLocked) return;
+        const cell = getCellFromEvent(e);
+        if (!cell) return;
+        const { row, col } = cell;
+        if (board[row][col] == null) return;
+        const last = selection[selection.length - 1];
+        if (last && last.row === row && last.col === col) return;
+
+        if (selection.length >= 2) {
+            const prev = selection[selection.length - 2];
+            if (prev.row === row && prev.col === col) {
+                selection.pop();
+                return;
+            }
+        }
+
+        if (selection.some(pos => pos.row === row && pos.col === col)) return;
+        if (selection.length >= 5) return;
+        if (isLogicalNeighbor(last, { row, col })) {
+            selection.push({ row, col });
+        }
+    }
+
+    function handlePointerUp() {
+        if (!dragging) return;
+        dragging = false;
+        if (gameState !== 'playing' || boardLocked) {
+            selection = [];
+            return;
+        }
+        if (selection.length >= 2 && selection.length <= 5) {
+            const sum = selection.reduce((acc, pos) => acc + board[pos.row][pos.col], 0);
+            if (sum === selection.length * 5) {
+                applySuccess(selection);
+            }
+        }
+        selection = [];
+    }
+
+    function isLogicalNeighbor(a, b) {
+        if (!a || !b) return false;
+        const neighbors = getLogicalNeighbors(board, a.row, a.col);
+        return neighbors.some(([nr, nc]) => nr === b.row && nc === b.col);
+    }
+
+    function applySuccess(selectedCells) {
+        boardLocked = true;
+        const snapshot = selectedCells.map(pos => ({ row: pos.row, col: pos.col, value: board[pos.row][pos.col] }));
+        for (const cell of snapshot) {
+            spawnPopParticles(cell);
+            board[cell.row][cell.col] = null;
+        }
+        score += snapshot.length;
+        if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem(BEST_KEY, String(bestScore));
+            updateBestTexts();
+        }
+        setTimeout(() => {
+            boardLocked = false;
+            if (gameState !== 'playing') return;
+            if (!hasAnyValidMove(board)) {
+                board = generatePlayableBoard();
+                flashText = '새 딸기판!';
+                flashUntil = performance.now() + 900;
+            }
+        }, 220);
+    }
+
+    function spawnPopParticles(cell) {
+        const center = getCellCenter(cell.row, cell.col);
+        for (let i = 0; i < 10; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 1.2 + Math.random() * 2.4;
+            particles.push({
+                x: center.x,
+                y: center.y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - 0.8,
+                life: 0.6 + Math.random() * 0.18,
+                maxLife: 0.6 + Math.random() * 0.18,
+                size: 4 + Math.random() * 5,
+                color: Math.random() > 0.35 ? '#ff6b90' : '#ffd56f'
+            });
+        }
+    }
+
+    function updateParticles(ts) {
+        const now = performance.now();
+        particles = particles.filter(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.04;
+            p.life -= 1 / 60;
+            return p.life > 0;
+        });
+        if (flashText && now > flashUntil) flashText = '';
+    }
+
+    function renderFrame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBoardBackground();
+        drawHud();
+        drawCells();
+        drawSelectionLine();
+        drawParticles();
+        drawFlashMessage();
+        if (gameState !== 'playing') {
+            drawIdleHint();
+        }
+    }
+
+    function drawBoardBackground() {
+        ctx.save();
+        const boardW = COLS * CELL + (COLS - 1) * GAP;
+        const boardH = ROWS * CELL + (ROWS - 1) * GAP;
+        roundRect(ctx, BOARD_X - 14, BOARD_Y - 14, boardW + 28, boardH + 28, 24);
+        const bg = ctx.createLinearGradient(0, BOARD_Y, 0, BOARD_Y + boardH);
+        bg.addColorStop(0, 'rgba(255, 247, 251, 0.95)');
+        bg.addColorStop(1, 'rgba(241, 255, 247, 0.95)');
+        ctx.fillStyle = bg;
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#e9c5d3';
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawHud() {
+        const nowScore = score;
+        const seconds = Math.ceil(timeLeft / 1000);
+
+        drawHudPill(48, 32, 170, 60, '#fff4f8', '#f0c6d4');
+        ctx.fillStyle = '#86596f';
+        ctx.font = 'bold 18px Malgun Gothic';
+        ctx.textAlign = 'left';
+        ctx.fillText('최고 기록', 68, 57);
+        ctx.font = 'bold 24px Malgun Gothic';
+        ctx.fillStyle = '#c54870';
+        ctx.fillText(`${bestScore}점`, 68, 84);
+
+        drawHudPill(canvas.width / 2 - 120, 24, 240, 68, '#fff7eb', '#edd8a8');
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#7c5c3f';
+        ctx.font = 'bold 19px Malgun Gothic';
+        ctx.fillText('점수', canvas.width / 2, 53);
+        ctx.fillStyle = '#d45462';
+        ctx.font = 'bold 34px Malgun Gothic';
+        ctx.fillText(String(nowScore), canvas.width / 2, 86);
+
+        drawHudPill(canvas.width - 222, 32, 172, 60, '#eef8ff', '#b9d9f0');
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#56718a';
+        ctx.font = 'bold 18px Malgun Gothic';
+        ctx.fillText('남은 시간', canvas.width - 136, 57);
+        ctx.fillStyle = seconds <= 10 ? '#df3a57' : '#3178b8';
+        ctx.font = 'bold 30px Malgun Gothic';
+        ctx.fillText(`${seconds}초`, canvas.width - 136, 86);
+    }
+
+    function drawHudPill(x, y, w, h, fill, stroke) {
+        ctx.save();
+        roundRect(ctx, x, y, w, h, 22);
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = stroke;
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawCells() {
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                const x = BOARD_X + c * (CELL + GAP);
+                const y = BOARD_Y + r * (CELL + GAP);
+
+                roundRect(ctx, x, y, CELL, CELL, 16);
+                ctx.fillStyle = 'rgba(255,255,255,0.55)';
+                ctx.fill();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(237, 211, 222, 0.85)';
+                ctx.stroke();
+
+                if (board[r] && board[r][c] != null) {
+                    const selected = selection.some(pos => pos.row === r && pos.col === c);
+                    drawStrawberry(x + CELL / 2, y + CELL / 2 + 2, 20, board[r][c], selected);
+                }
+            }
+        }
+    }
+
+    function drawStrawberry(cx, cy, radius, value, selected) {
+        ctx.save();
+        if (selected) {
+            ctx.shadowColor = 'rgba(255, 214, 64, 0.9)';
+            ctx.shadowBlur = 18;
+        }
+
+        // leaf
+        ctx.beginPath();
+        ctx.moveTo(cx - 12, cy - 12);
+        ctx.quadraticCurveTo(cx - 5, cy - 23, cx, cy - 15);
+        ctx.quadraticCurveTo(cx + 5, cy - 23, cx + 12, cy - 12);
+        ctx.quadraticCurveTo(cx + 1, cy - 12, cx, cy - 7);
+        ctx.quadraticCurveTo(cx - 1, cy - 12, cx - 12, cy - 12);
+        ctx.fillStyle = '#77ba4b';
+        ctx.fill();
+
+        // strawberry body
+        const grad = ctx.createLinearGradient(cx, cy - 22, cx, cy + 24);
+        grad.addColorStop(0, '#ff97ad');
+        grad.addColorStop(0.45, '#f75b7d');
+        grad.addColorStop(1, '#d53e62');
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 19);
+        ctx.bezierCurveTo(cx + 18, cy - 22, cx + 23, cy - 2, cx + 10, cy + 18);
+        ctx.bezierCurveTo(cx + 6, cy + 24, cx + 1, cy + 26, cx, cy + 27);
+        ctx.bezierCurveTo(cx - 1, cy + 26, cx - 6, cy + 24, cx - 10, cy + 18);
+        ctx.bezierCurveTo(cx - 23, cy - 2, cx - 18, cy - 22, cx, cy - 19);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.lineWidth = selected ? 3.5 : 2.2;
+        ctx.strokeStyle = selected ? '#ffd64f' : '#c43759';
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+
+        // seeds
+        ctx.fillStyle = 'rgba(255, 232, 164, 0.95)';
+        const seeds = [[-7,-4], [0,-6], [7,-3], [-9,5], [-2,3], [5,4], [0,11]];
+        seeds.forEach(([sx, sy]) => {
+            ctx.beginPath();
+            ctx.ellipse(cx + sx, cy + sy, 1.7, 2.3, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // number
+        ctx.fillStyle = '#fffdf8';
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.strokeStyle = 'rgba(142, 32, 58, 0.55)';
+        ctx.lineWidth = 4;
+        ctx.strokeText(String(value), cx, cy + 3);
+        ctx.fillText(String(value), cx, cy + 3);
+
+        ctx.restore();
+    }
+
+    function drawSelectionLine() {
+        if (!selection.length) return;
+        ctx.save();
+        ctx.beginPath();
+        selection.forEach((pos, idx) => {
+            const { x, y } = getCellCenter(pos.row, pos.col);
+            if (idx === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = 'rgba(255, 214, 79, 0.58)';
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawParticles() {
+        ctx.save();
+        particles.forEach(p => {
+            ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+        });
+        ctx.restore();
+    }
+
+    function drawFlashMessage() {
+        if (!flashText) return;
+        const alpha = Math.max(0, (flashUntil - performance.now()) / 900);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        drawHudPill(canvas.width / 2 - 110, 106, 220, 36, 'rgba(255,255,255,0.92)', '#f0d093');
+        ctx.fillStyle = '#cc5578';
+        ctx.font = 'bold 18px Malgun Gothic';
+        ctx.textAlign = 'center';
+        ctx.fillText(flashText, canvas.width / 2, 130);
+        ctx.restore();
+    }
+
+    function drawIdleHint() {
+        ctx.save();
+        ctx.globalAlpha = 0.82;
+        ctx.fillStyle = '#9f8e98';
+        ctx.font = 'bold 16px Malgun Gothic';
+        ctx.textAlign = 'center';
+        ctx.fillText('시작 버튼을 누르면 90초 게임이 시작됩니다.', canvas.width / 2, canvas.height - 24);
+        ctx.restore();
+    }
+
+    function getCellFromEvent(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        if (x < BOARD_X || y < BOARD_Y) return null;
+        const pitch = CELL + GAP;
+        const col = Math.floor((x - BOARD_X) / pitch);
+        const row = Math.floor((y - BOARD_Y) / pitch);
+        if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return null;
+        const cellX = BOARD_X + col * pitch;
+        const cellY = BOARD_Y + row * pitch;
+        if (x < cellX || x > cellX + CELL || y < cellY || y > cellY + CELL) return null;
+        return { row, col };
+    }
+
+    function getCellCenter(row, col) {
+        const x = BOARD_X + col * (CELL + GAP) + CELL / 2;
+        const y = BOARD_Y + row * (CELL + GAP) + CELL / 2;
+        return { x, y };
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+
+    function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+})();
+</script>
+</body>
+</html>
