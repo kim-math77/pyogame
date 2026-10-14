@@ -221,9 +221,9 @@
 
     const ROWS = 10;
     const COLS = 10;
-    const CELL = 56;
-    const GAP = 8;
-    const BOARD_X = 58;
+    const CELL = 53;
+    const GAP = 7;
+    const BOARD_X = 114;
     const BOARD_Y = 150;
     const GAME_DURATION = 90 * 1000;
     const BEST_KEY = 'strawberryGameBestScore';
@@ -314,14 +314,14 @@
     function generatePlayableBoard() {
         let candidate = null;
         for (let attempt = 0; attempt < 240; attempt++) {
-            const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randInt(1, 9)));
+            const boardTry = Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomStrawberryNumber()));
             const count = evaluateBoard(boardTry, 150);
             if (count >= 36 && count <= 150) {
                 return boardTry;
             }
             candidate = boardTry;
         }
-        return candidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randInt(1, 9)));
+        return candidate || Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => randomStrawberryNumber()));
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {
@@ -603,7 +603,7 @@
 
                 if (board[r] && board[r][c] != null) {
                     const selected = selection.some(pos => pos.row === r && pos.col === c);
-                    drawStrawberry(x + CELL / 2, y + CELL / 2 + 2, 20, board[r][c], selected);
+                    drawStrawberry(x + CELL / 2, y + CELL / 2 + 2, 19, board[r][c], selected);
                 }
             }
         }
@@ -751,6 +751,11 @@
         ctx.arcTo(x, y + h, x, y, r);
         ctx.arcTo(x, y, x + w, y, r);
         ctx.closePath();
+    }
+
+    function randomStrawberryNumber() {
+        const values = [1, 2, 3, 4, 6, 7, 8, 9];
+        return values[Math.floor(Math.random() * values.length)];
     }
 
     function randInt(min, max) {
