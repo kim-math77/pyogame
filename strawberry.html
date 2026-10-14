@@ -296,6 +296,8 @@
     let flashText = '';
     let flashUntil = 0;
     let boardLocked = false;
+    let lastNoMoveCheck = 0;
+    let reshufflePending = false;
 
     updateBestTexts();
     renderFrame();
@@ -434,6 +436,8 @@
         flashText = '시작!';
         flashUntil = performance.now() + 900;
         boardLocked = false;
+        lastNoMoveCheck = 0;
+        reshufflePending = false;
         renderFrame();
     }
 
@@ -460,6 +464,11 @@
             timeLeft = Math.max(0, endTime - ts);
             if (timeLeft <= 0) {
                 endGame();
+            } else if (!boardLocked && !dragging && !reshufflePending && ts - lastNoMoveCheck >= 700) {
+                lastNoMoveCheck = ts;
+                if (!hasAnyValidMove(board)) {
+                    scheduleNewBoard();
+                }
             }
         }
         renderFrame();
@@ -640,20 +649,33 @@
                 return;
             }
             if (!hasAnyValidMove(board)) {
-                flashText = '조합이 없어요! 새 딸기판으로 바꿉니다 🍓';
-                flashUntil = performance.now() + 1050;
-                setTimeout(() => {
-                    if (gameState !== 'playing') {
-                        boardLocked = false;
-                        return;
-                    }
-                    board = generatePlayableBoard();
-                    boardLocked = false;
-                }, 800);
+                scheduleNewBoard();
             } else {
                 boardLocked = false;
             }
         }, 220);
+    }
+
+    function scheduleNewBoard() {
+        if (reshufflePending || gameState !== 'playing') return;
+        reshufflePending = true;
+        boardLocked = true;
+        dragging = false;
+        selection = [];
+        flashText = '조합이 없어요! 새 딸기판으로 바꿉니다 🍓';
+        flashUntil = performance.now() + 1200;
+
+        setTimeout(() => {
+            if (gameState !== 'playing') {
+                boardLocked = false;
+                reshufflePending = false;
+                return;
+            }
+            board = generatePlayableBoard();
+            boardLocked = false;
+            reshufflePending = false;
+            lastNoMoveCheck = performance.now();
+        }, 850);
     }
 
     function spawnPopParticles(cell) {
