@@ -172,6 +172,26 @@
     .mode-choice.median strong { color:#4e7fa8; }
     .mode-choice.mode strong { color:#4f8b63; }
     .mode-choice span { font-size:14px; line-height:1.55; }
+    .challenge-box {
+        margin-top:16px;
+        padding:13px 18px;
+        border-radius:16px;
+        background:linear-gradient(180deg,#fffdf3 0%,#fff4cf 100%);
+        border:1px solid #efd27a;
+        color:#6c5867;
+        font-weight:bold;
+        line-height:1.55;
+        box-shadow:0 6px 14px rgba(167,126,28,.10);
+    }
+    .challenge-box .challenge-title { font-size:18px; color:#c47a18; margin-bottom:3px; }
+    .challenge-box .challenge-total { font-size:21px; color:#c74870; }
+    .challenge-box.clear {
+        background:linear-gradient(180deg,#f4fff6 0%,#e4f7e8 100%);
+        border-color:#add5b5;
+    }
+    .challenge-box.clear .challenge-title,
+    .challenge-box.clear .challenge-total { color:#43835a; }
+    .result-challenge { margin-top:12px; }
     .menu-back-btn {
         margin-top:12px; border:none; border-radius:12px; padding:10px 18px; cursor:pointer;
         font-weight:bold; background:#95adbd; color:white; font-family:inherit;
@@ -209,6 +229,11 @@
                             <span>3~5개의 딸기를 이어<br>최빈값이 5가 되면 제거!</span>
                         </button>
                     </div>
+                    <div class="challenge-box" id="challengeBox">
+                        <div class="challenge-title">🏆 도전과제: 세 게임 합계 200점!</div>
+                        <div id="challengeBreakdown">평균 0 + 중앙값 0 + 최빈값 0</div>
+                        <div class="challenge-total" id="challengeTotal">총 0점 / 200점</div>
+                    </div>
                 </div>
             </div>
 
@@ -228,6 +253,11 @@
                     <h2>⏰ 시간 종료!</h2>
                     <div class="result-score" id="finalScoreText">이번 점수: 0점</div>
                     <div class="best-line" id="bestResultText">최고 기록: 0점</div>
+                    <div class="challenge-box result-challenge" id="resultChallengeBox">
+                        <div class="challenge-title">🏆 세 게임 합산 도전</div>
+                        <div id="resultChallengeBreakdown">평균 0 + 중앙값 0 + 최빈값 0</div>
+                        <div class="challenge-total" id="resultChallengeTotal">총 0점 / 200점</div>
+                    </div>
                     <button class="retry-btn" id="btnRetryGame">다시 도전하기</button>
                     <button class="menu-back-btn" id="btnResultBackToModes">돌아가기</button>
                     <div class="small-note">최고 기록은 이 기기에서 자동으로 저장됩니다.</div>
@@ -270,6 +300,12 @@
     const gameModeTitle = document.getElementById('gameModeTitle');
     const gameGuide = document.getElementById('gameGuide');
     const hintBox = document.getElementById('hintBox');
+    const challengeBox = document.getElementById('challengeBox');
+    const challengeBreakdown = document.getElementById('challengeBreakdown');
+    const challengeTotal = document.getElementById('challengeTotal');
+    const resultChallengeBox = document.getElementById('resultChallengeBox');
+    const resultChallengeBreakdown = document.getElementById('resultChallengeBreakdown');
+    const resultChallengeTotal = document.getElementById('resultChallengeTotal');
 
     const ROWS = 10;
     const COLS = 15;
@@ -300,6 +336,7 @@
     let reshufflePending = false;
 
     updateBestTexts();
+    updateChallengeDisplay();
     renderFrame();
     rafId = requestAnimationFrame(loop);
 
@@ -378,6 +415,7 @@
         modeOverlay.style.display = 'none';
         startOverlay.style.display = 'none';
         resultOverlay.style.display = 'none';
+        updateChallengeDisplay();
         modeOverlay.style.display = 'flex';
     }
 
@@ -414,6 +452,28 @@
             if (value !== 5 && count >= fiveCount) return false;
         }
         return true;
+    }
+
+    function getChallengeScores() {
+        const average = Number(localStorage.getItem('strawberryAverageLastScore') || 0);
+        const median = Number(localStorage.getItem('strawberryMedianLastScore') || 0);
+        const mode = Number(localStorage.getItem('strawberryModeLastScore') || 0);
+        return { average, median, mode, total: average + median + mode };
+    }
+
+    function updateChallengeDisplay() {
+        const s = getChallengeScores();
+        const breakdown = `평균 ${s.average} + 중앙값 ${s.median} + 최빈값 ${s.mode}`;
+        const totalText = s.total >= 200
+            ? `🎉 총 ${s.total}점 — 200점 도전 성공!`
+            : `총 ${s.total}점 / 200점`;
+
+        challengeBreakdown.textContent = breakdown;
+        challengeTotal.textContent = totalText;
+        resultChallengeBreakdown.textContent = breakdown;
+        resultChallengeTotal.textContent = totalText;
+        challengeBox.classList.toggle('clear', s.total >= 200);
+        resultChallengeBox.classList.toggle('clear', s.total >= 200);
     }
 
     function updateBestTexts() {
@@ -453,6 +513,7 @@
             updateBestTexts();
         }
         localStorage.setItem(SCORE_POP_KEY, String(score));
+        updateChallengeDisplay();
         finalScoreText.textContent = `이번 점수: ${score}점`;
         resultOverlay.style.display = 'flex';
         renderFrame();
