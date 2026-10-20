@@ -25,7 +25,7 @@
         100% { background-position: 0% 50%; }
     }
     .container {
-        width: min(980px, 100%);
+        width: min(1210px, 100%);
         background: rgba(255,255,255,0.88);
         border: 1px solid rgba(255,255,255,0.85);
         border-radius: 26px;
@@ -63,9 +63,9 @@
         justify-content: center;
     }
     #gameCanvas {
-        width: min(940px, 100%);
-        max-width: 940px;
-        aspect-ratio: 940 / 660;
+        width: min(1170px, 100%);
+        max-width: 1170px;
+        aspect-ratio: 1170 / 660;
         border-radius: 20px;
         border: 4px solid #f0bfd0;
         background: linear-gradient(180deg, #fff9fc 0%, #fffef7 56%, #f4fff8 100%);
@@ -186,7 +186,7 @@
         </div>
         <h1>🍓 딸기 게임</h1>
         <div class="game-wrap">
-            <canvas id="gameCanvas" width="940" height="660"></canvas>
+            <canvas id="gameCanvas" width="1170" height="660"></canvas>
 
             <div class="overlay" id="modeOverlay" style="display:flex;">
                 <div class="panel">
@@ -272,7 +272,7 @@
     const hintBox = document.getElementById('hintBox');
 
     const ROWS = 10;
-    const COLS = 10;
+    const COLS = 15;
     const CELL = 53;
     const GAP = 7;
     const BOARD_X = 28;
@@ -337,7 +337,7 @@
         if (mode === 'average') {
             gameModeTitle.textContent = '🍓 평균 딸기게임';
             gameGuide.innerHTML = `<strong>게임 방법</strong><br>
-                ① 숫자를 보고 <strong>서로 이웃한 딸기 2~3개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ① 숫자를 보고 <strong>가로 또는 세로 한 줄로 이웃한 딸기 2~3개</strong>를 손가락으로 드래그해 선택하세요.<br>
                 ② 선택한 숫자들의 <strong>평균이 5</strong>이면 딸기가 사라집니다.<br>
                 ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
@@ -346,7 +346,7 @@
         } else if (mode === 'median') {
             gameModeTitle.textContent = '🍓 중앙값 딸기게임';
             gameGuide.innerHTML = `<strong>게임 방법</strong><br>
-                ① 숫자를 보고 <strong>서로 이웃한 딸기 3~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ① 숫자를 보고 <strong>가로 또는 세로 한 줄로 이웃한 딸기 3~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
                 ② 선택한 수를 크기순으로 놓았을 때 <strong>중앙값이 5</strong>이면 딸기가 사라집니다.<br>
                 ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
@@ -355,7 +355,7 @@
         } else {
             gameModeTitle.textContent = '🍓 최빈값 딸기게임';
             gameGuide.innerHTML = `<strong>게임 방법</strong><br>
-                ① 숫자를 보고 <strong>서로 이웃한 딸기 3~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
+                ① 숫자를 보고 <strong>가로 또는 세로 한 줄로 이웃한 딸기 3~5개</strong>를 손가락으로 드래그해 선택하세요.<br>
                 ② 선택한 수 중 <strong>5가 유일한 최빈값</strong>이면 딸기가 사라집니다.<br>
                 ③ 사라진 딸기 개수만큼 점수를 얻습니다.<br>
                 ④ 제한 시간 <strong>90초</strong> 안에 최고 점수에 도전하세요!<br>
@@ -466,7 +466,15 @@
                 endGame();
             } else if (!boardLocked && !dragging && !reshufflePending && ts - lastNoMoveCheck >= 700) {
                 lastNoMoveCheck = ts;
-                if (!hasAnyValidMove(board)) {
+
+                const remainingFives =
+                    currentMode === 'mode'
+                        ? board.flat().filter(value => value === 5).length
+                        : Infinity;
+
+                if (currentMode === 'mode' && remainingFives < 2) {
+                    scheduleNewBoard('최빈값 5 조합이 없어요! 새 딸기판으로 바꿉니다 🍓');
+                } else if (!hasAnyValidMove(board)) {
                     scheduleNewBoard();
                 }
             }
@@ -530,101 +538,72 @@
         );
     }
 
-    function countAverageCombosByLength(targetBoard) {
-        let two = 0;
-        let three = 0;
-        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+    function getNextLogicalCell(boardRef, row, col, dr, dc) {
+        let nr = row + dr;
+        let nc = col + dc;
+        while (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+            if (boardRef[nr][nc] != null) return [nr, nc];
+            nr += dr;
+            nc += dc;
+        }
+        return null;
+    }
 
+    // 실제 사과게임 방식: 한 번의 조합은 가로 또는 세로 한 방향으로만 이어집니다.
+    // 중간에 빈칸이 있으면 그 방향의 가장 가까운 남은 딸기를 다음 이웃으로 봅니다.
+    function forEachStraightPath(targetBoard, callback, maxLength = getMaxSelection()) {
+        const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 if (targetBoard[r][c] == null) continue;
-                visited[r][c] = true;
-                dfs(r, c, [targetBoard[r][c]]);
-                visited[r][c] = false;
+                for (const [dr, dc] of dirs) {
+                    const values = [targetBoard[r][c]];
+                    const cells = [[r, c]];
+                    let cr = r;
+                    let cc = c;
+                    for (let length = 2; length <= maxLength; length++) {
+                        const next = getNextLogicalCell(targetBoard, cr, cc, dr, dc);
+                        if (!next) break;
+                        const [nr, nc] = next;
+                        values.push(targetBoard[nr][nc]);
+                        cells.push([nr, nc]);
+                        if (callback(values, cells) === true) return true;
+                        cr = nr;
+                        cc = nc;
+                    }
+                }
             }
         }
+        return false;
+    }
 
-        // 같은 경로가 반대 방향으로도 세어지므로 두 수치는 비교용 내부 지표로 사용합니다.
-        return { two, three };
-
-        function dfs(r, c, values) {
+    function countAverageCombosByLength(targetBoard) {
+        let two = 0;
+        let three = 0;
+        forEachStraightPath(targetBoard, (values) => {
             if (values.length === 2 && values[0] + values[1] === 10) two++;
-            if (values.length === 3 && values[0] + values[1] + values[2] === 15) {
-                three++;
-                return;
-            }
-            if (values.length >= 3) return;
-
-            for (const [nr, nc] of getLogicalNeighbors(targetBoard, r, c)) {
-                if (visited[nr][nc]) continue;
-                visited[nr][nc] = true;
-                dfs(nr, nc, [...values, targetBoard[nr][nc]]);
-                visited[nr][nc] = false;
-            }
-        }
+            if (values.length === 3 && values[0] + values[1] + values[2] === 15) three++;
+            return false;
+        }, 3);
+        return { two, three };
     }
 
     function evaluateBoard(targetBoard, limit = Infinity) {
         let count = 0;
-        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
-        for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-                if (targetBoard[r][c] == null) continue;
-                visited[r][c] = true;
-                dfsCount(r, c, 1, targetBoard[r][c], visited, targetBoard, [targetBoard[r][c]]);
-                visited[r][c] = false;
-                if (count >= limit) return count;
-            }
-        }
-        return count;
-
-        function dfsCount(r, c, length, sum, visited, boardRef, pathValues) {
-            if (length >= 2 && isValidSelectionValues(pathValues)) {
+        forEachStraightPath(targetBoard, (values) => {
+            if (values.length >= getMinSelection() && isValidSelectionValues(values)) {
                 count++;
-                if (count >= limit) return;
+                if (count >= limit) return true;
             }
-            if (length === getMaxSelection() || count >= limit) return;
-            const neighbors = getLogicalNeighbors(boardRef, r, c);
-            for (const [nr, nc] of neighbors) {
-                if (visited[nr][nc]) continue;
-                visited[nr][nc] = true;
-                dfsCount(nr, nc, length + 1, sum + boardRef[nr][nc], visited, boardRef, [...pathValues, boardRef[nr][nc]]);
-                visited[nr][nc] = false;
-                if (count >= limit) return;
-            }
-        }
+            return false;
+        }, getMaxSelection());
+        return count;
     }
 
     function hasAnyValidMove(targetBoard) {
-        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
-        for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-                if (targetBoard[r][c] == null) continue;
-                visited[r][c] = true;
-                if (dfsFind(r, c, 1, targetBoard[r][c], [targetBoard[r][c]])) {
-                    visited[r][c] = false;
-                    return true;
-                }
-                visited[r][c] = false;
-            }
-        }
-        return false;
-
-        function dfsFind(r, c, length, sum, pathValues) {
-            if (length >= 2 && isValidSelectionValues(pathValues)) return true;
-            if (length === getMaxSelection()) return false;
-            const neighbors = getLogicalNeighbors(targetBoard, r, c);
-            for (const [nr, nc] of neighbors) {
-                if (visited[nr][nc]) continue;
-                visited[nr][nc] = true;
-                if (dfsFind(nr, nc, length + 1, sum + targetBoard[nr][nc], [...pathValues, targetBoard[nr][nc]])) {
-                    visited[nr][nc] = false;
-                    return true;
-                }
-                visited[nr][nc] = false;
-            }
-            return false;
-        }
+        return forEachStraightPath(targetBoard, (values) => {
+            return values.length >= getMinSelection() && isValidSelectionValues(values);
+        }, getMaxSelection());
     }
 
     function getLogicalNeighbors(boardRef, row, col) {
@@ -675,6 +654,17 @@
 
         if (selection.some(pos => pos.row === row && pos.col === col)) return;
         if (selection.length >= getMaxSelection()) return;
+
+        // 두 번째 딸기에서 가로/세로 방향이 정해지고,
+        // 그 뒤에는 같은 행 또는 같은 열로만 계속 선택할 수 있습니다.
+        if (selection.length >= 2) {
+            const first = selection[0];
+            const second = selection[1];
+            const horizontal = first.row === second.row;
+            if (horizontal && row !== first.row) return;
+            if (!horizontal && col !== first.col) return;
+        }
+
         if (isLogicalNeighbor(last, { row, col })) {
             selection.push({ row, col });
         }
@@ -724,8 +714,15 @@
                 currentMode === 'median' &&
                 !board.some(row => row.some(value => value === 5));
 
+            const remainingFives =
+                currentMode === 'mode'
+                    ? board.flat().filter(value => value === 5).length
+                    : Infinity;
+
             if (noFiveLeftInMedian) {
                 scheduleNewBoard('5가 모두 사라졌어요! 새 딸기판으로 바꿉니다 🍓');
+            } else if (currentMode === 'mode' && remainingFives < 2) {
+                scheduleNewBoard('최빈값 5 조합이 없어요! 새 딸기판으로 바꿉니다 🍓');
             } else if (!hasAnyValidMove(board)) {
                 scheduleNewBoard();
             } else {
@@ -818,8 +815,8 @@
     function drawHud() {
         const nowScore = score;
         const seconds = Math.ceil(timeLeft / 1000);
-        const hudX = 666;
-        const hudW = 238;
+        const hudX = 930;
+        const hudW = 220;
 
         drawHudPill(hudX, 70, hudW, 116, '#fff4f8', '#f0c6d4');
         ctx.fillStyle = '#86596f';
@@ -979,17 +976,17 @@
 
         const isLongNotice = flashText.length > 10;
         if (isLongNotice) {
-            drawHudPill(155, 402, 510, 58, 'rgba(255,255,255,0.96)', '#efb9ca');
+            drawHudPill(220, 402, 510, 58, 'rgba(255,255,255,0.96)', '#efb9ca');
             ctx.fillStyle = '#c9476d';
             ctx.font = 'bold 19px Malgun Gothic';
             ctx.textAlign = 'center';
-            ctx.fillText(flashText, 410, 438);
+            ctx.fillText(flashText, 475, 438);
         } else {
-            drawHudPill(676, 560, 218, 42, 'rgba(255,255,255,0.92)', '#f0d093');
+            drawHudPill(931, 560, 218, 42, 'rgba(255,255,255,0.92)', '#f0d093');
             ctx.fillStyle = '#cc5578';
             ctx.font = 'bold 18px Malgun Gothic';
             ctx.textAlign = 'center';
-            ctx.fillText(flashText, 785, 587);
+            ctx.fillText(flashText, 1040, 587);
         }
         ctx.restore();
     }
