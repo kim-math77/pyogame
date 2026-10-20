@@ -455,9 +455,9 @@
     }
 
     function getChallengeScores() {
-        const average = Number(localStorage.getItem('strawberryAverageLastScore') || 0);
-        const median = Number(localStorage.getItem('strawberryMedianLastScore') || 0);
-        const mode = Number(localStorage.getItem('strawberryModeLastScore') || 0);
+        const average = Number(localStorage.getItem('strawberryAverageBestScore') || 0);
+        const median = Number(localStorage.getItem('strawberryMedianBestScore') || 0);
+        const mode = Number(localStorage.getItem('strawberryModeBestScore') || 0);
         return { average, median, mode, total: average + median + mode };
     }
 
