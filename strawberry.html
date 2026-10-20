@@ -1108,6 +1108,9 @@
             const others = [1,2,3,4,6,7,8,9];
             return others[Math.floor(Math.random() * others.length)];
         }
+        // 평균 게임도 5를 포함하되, 다른 숫자보다 아주 조금 덜 나오게 합니다.
+        // 5는 약 9% 확률, 나머지 숫자는 각각 약 11.4% 확률입니다.
+        if (Math.random() < 0.09) return 5;
         const values = [1,2,3,4,6,7,8,9];
         return values[Math.floor(Math.random() * values.length)];
     }
