@@ -305,6 +305,11 @@
         });
 
         document.getElementById("btnEnterStrawberry").addEventListener("click", () => {
+            if (sessionStorage.getItem("strawberryGameUnlocked") === "true") {
+                location.href = "strawberry.html";
+                return;
+            }
+
             const pwd = prompt("딸기 게임 비밀번호를 입력하세요 🔒");
             if (pwd === "7104") {
                 sessionStorage.setItem("strawberryGameUnlocked", "true");
