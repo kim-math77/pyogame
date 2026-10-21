@@ -210,7 +210,7 @@
 </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="gameContainer">
         <div class="top-buttons">
             <a href="stat.html" class="back-btn">⬅ 뒤로 가기</a>
         </div>
@@ -301,6 +301,55 @@
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const gameContainer = document.getElementById('gameContainer');
+
+    // 태블릿마다 실제 브라우저 세로 공간이 다르므로,
+    // 맨 아래 행이 잘릴 때에만 게임 전체 폭을 조금 줄여 10행이 모두 보이게 합니다.
+    function fitGameToViewport() {
+        if (!gameContainer) return;
+
+        // 먼저 기본(가로 폭 기준) 크기로 되돌린 뒤 현재 사용 가능한 높이를 측정합니다.
+        gameContainer.style.width = '';
+
+        requestAnimationFrame(() => {
+            const viewportHeight = window.visualViewport?.height || window.innerHeight;
+            const viewportWidth = window.visualViewport?.width || window.innerWidth;
+            const canvasRect = canvas.getBoundingClientRect();
+            const sideSpace = 20;
+            const bottomSafety = 10;
+            const availableCanvasHeight = viewportHeight - canvasRect.top - bottomSafety;
+
+            if (availableCanvasHeight <= 0) return;
+
+            const naturalCanvasHeight = canvasRect.height;
+            if (naturalCanvasHeight <= availableCanvasHeight + 1) return;
+
+            // 캔버스 비율(1170:660)을 유지하면서 필요한 만큼만 축소합니다.
+            const canvasWidthByHeight = availableCanvasHeight * (1170 / 660);
+            const containerExtraWidth = 26; // 좌우 패딩/테두리 여유
+            const targetWidth = Math.max(720, Math.min(1210, viewportWidth - sideSpace, canvasWidthByHeight + containerExtraWidth));
+            gameContainer.style.width = `${targetWidth}px`;
+
+            // 브라우저 UI 계산 오차로 1~2px 남는 경우 한 번 더 미세 조정합니다.
+            requestAnimationFrame(() => {
+                const updated = canvas.getBoundingClientRect();
+                const currentViewportHeight = window.visualViewport?.height || window.innerHeight;
+                const overflow = updated.bottom + bottomSafety - currentViewportHeight;
+                if (overflow > 1) {
+                    const usableHeight = Math.max(1, updated.height - overflow);
+                    const ratio = usableHeight / updated.height;
+                    const currentWidth = gameContainer.getBoundingClientRect().width;
+                    gameContainer.style.width = `${Math.max(720, currentWidth * ratio)}px`;
+                }
+            });
+        });
+    }
+
+    window.addEventListener('resize', fitGameToViewport);
+    window.addEventListener('orientationchange', () => setTimeout(fitGameToViewport, 120));
+    window.visualViewport?.addEventListener('resize', fitGameToViewport);
+    window.visualViewport?.addEventListener('scroll', fitGameToViewport);
+    fitGameToViewport();
 
     const modeOverlay = document.getElementById('modeOverlay');
     const startOverlay = document.getElementById('startOverlay');
