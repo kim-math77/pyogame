@@ -183,8 +183,18 @@
         line-height:1.55;
         box-shadow:0 6px 14px rgba(167,126,28,.10);
     }
-    .challenge-box .challenge-title { font-size:18px; color:#c47a18; margin-bottom:3px; }
-    .challenge-box .challenge-total { font-size:21px; color:#c74870; }
+    .challenge-box .challenge-title { font-size:18px; color:#c47a18; margin-bottom:8px; }
+    .mission-list { display:grid; gap:7px; margin-top:4px; }
+    .mission-item {
+        display:flex; align-items:center; justify-content:space-between; gap:12px;
+        padding:8px 11px; border-radius:12px; background:rgba(255,255,255,.72);
+        border:1px solid rgba(210,180,100,.28); font-size:15px;
+    }
+    .mission-item .mission-name { text-align:left; }
+    .mission-item .mission-status { min-width:82px; text-align:right; font-weight:900; color:#b16471; }
+    .mission-item.done { background:#f0fbf3; border-color:#b9d9c1; }
+    .mission-item.done .mission-status { color:#43835a; }
+    .challenge-box .challenge-total { margin-top:9px; font-size:19px; color:#c74870; }
     .challenge-box.clear {
         background:linear-gradient(180deg,#f4fff6 0%,#e4f7e8 100%);
         border-color:#add5b5;
@@ -230,9 +240,13 @@
                         </button>
                     </div>
                     <div class="challenge-box" id="challengeBox">
-                        <div class="challenge-title">🏆 도전과제: 세 게임 합계 200점!</div>
-                        <div id="challengeBreakdown">평균 0 + 중앙값 0 + 최빈값 0</div>
-                        <div class="challenge-total" id="challengeTotal">총 0점 / 200점</div>
+                        <div class="challenge-title">🏆 초콜릿 도전과제</div>
+                        <div class="mission-list">
+                            <div class="mission-item" id="missionAverage"><span class="mission-name">🍓 평균 50점 이상</span><span class="mission-status" id="missionAverageStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="missionMedian"><span class="mission-name">🍓 중앙값 70점 이상</span><span class="mission-status" id="missionMedianStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="missionMode"><span class="mission-name">🍓 최빈값 100점 이상</span><span class="mission-status" id="missionModeStatus">⬜ 0점</span></div>
+                        </div>
+                        <div class="challenge-total" id="challengeTotal">3개 모두 달성하면 초콜릿! 🍫</div>
                     </div>
                 </div>
             </div>
@@ -254,9 +268,13 @@
                     <div class="result-score" id="finalScoreText">이번 점수: 0점</div>
                     <div class="best-line" id="bestResultText">최고 기록: 0점</div>
                     <div class="challenge-box result-challenge" id="resultChallengeBox">
-                        <div class="challenge-title">🏆 세 게임 합산 도전</div>
-                        <div id="resultChallengeBreakdown">평균 0 + 중앙값 0 + 최빈값 0</div>
-                        <div class="challenge-total" id="resultChallengeTotal">총 0점 / 200점</div>
+                        <div class="challenge-title">🏆 초콜릿 도전과제</div>
+                        <div class="mission-list">
+                            <div class="mission-item" id="resultMissionAverage"><span class="mission-name">🍓 평균 50점 이상</span><span class="mission-status" id="resultMissionAverageStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="resultMissionMedian"><span class="mission-name">🍓 중앙값 70점 이상</span><span class="mission-status" id="resultMissionMedianStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="resultMissionMode"><span class="mission-name">🍓 최빈값 100점 이상</span><span class="mission-status" id="resultMissionModeStatus">⬜ 0점</span></div>
+                        </div>
+                        <div class="challenge-total" id="resultChallengeTotal">3개 모두 달성하면 초콜릿! 🍫</div>
                     </div>
                     <button class="retry-btn" id="btnRetryGame">다시 도전하기</button>
                     <button class="menu-back-btn" id="btnResultBackToModes">돌아가기</button>
@@ -301,11 +319,21 @@
     const gameGuide = document.getElementById('gameGuide');
     const hintBox = document.getElementById('hintBox');
     const challengeBox = document.getElementById('challengeBox');
-    const challengeBreakdown = document.getElementById('challengeBreakdown');
     const challengeTotal = document.getElementById('challengeTotal');
     const resultChallengeBox = document.getElementById('resultChallengeBox');
-    const resultChallengeBreakdown = document.getElementById('resultChallengeBreakdown');
     const resultChallengeTotal = document.getElementById('resultChallengeTotal');
+    const missionAverage = document.getElementById('missionAverage');
+    const missionMedian = document.getElementById('missionMedian');
+    const missionMode = document.getElementById('missionMode');
+    const missionAverageStatus = document.getElementById('missionAverageStatus');
+    const missionMedianStatus = document.getElementById('missionMedianStatus');
+    const missionModeStatus = document.getElementById('missionModeStatus');
+    const resultMissionAverage = document.getElementById('resultMissionAverage');
+    const resultMissionMedian = document.getElementById('resultMissionMedian');
+    const resultMissionMode = document.getElementById('resultMissionMode');
+    const resultMissionAverageStatus = document.getElementById('resultMissionAverageStatus');
+    const resultMissionMedianStatus = document.getElementById('resultMissionMedianStatus');
+    const resultMissionModeStatus = document.getElementById('resultMissionModeStatus');
 
     const ROWS = 10;
     const COLS = 15;
@@ -458,22 +486,33 @@
         const average = Number(localStorage.getItem('strawberryAverageBestScore') || 0);
         const median = Number(localStorage.getItem('strawberryMedianBestScore') || 0);
         const mode = Number(localStorage.getItem('strawberryModeBestScore') || 0);
-        return { average, median, mode, total: average + median + mode };
+        return { average, median, mode };
+    }
+
+    function updateMissionRow(row, status, score, target) {
+        const done = score >= target;
+        row.classList.toggle('done', done);
+        status.textContent = `${done ? '✅' : '⬜'} ${score}점`;
+        return done;
     }
 
     function updateChallengeDisplay() {
         const s = getChallengeScores();
-        const breakdown = `평균 ${s.average} + 중앙값 ${s.median} + 최빈값 ${s.mode}`;
-        const totalText = s.total >= 200
-            ? `🎉 총 ${s.total}점 — 200점 도전 성공!`
-            : `총 ${s.total}점 / 200점`;
+        const averageDone = updateMissionRow(missionAverage, missionAverageStatus, s.average, 50);
+        const medianDone = updateMissionRow(missionMedian, missionMedianStatus, s.median, 70);
+        const modeDone = updateMissionRow(missionMode, missionModeStatus, s.mode, 100);
+        updateMissionRow(resultMissionAverage, resultMissionAverageStatus, s.average, 50);
+        updateMissionRow(resultMissionMedian, resultMissionMedianStatus, s.median, 70);
+        updateMissionRow(resultMissionMode, resultMissionModeStatus, s.mode, 100);
 
-        challengeBreakdown.textContent = breakdown;
-        challengeTotal.textContent = totalText;
-        resultChallengeBreakdown.textContent = breakdown;
-        resultChallengeTotal.textContent = totalText;
-        challengeBox.classList.toggle('clear', s.total >= 200);
-        resultChallengeBox.classList.toggle('clear', s.total >= 200);
+        const allClear = averageDone && medianDone && modeDone;
+        const message = allClear
+            ? '🎉 도전과제 완료! 선생님께 초콜릿 받기! 🍫'
+            : '3개 모두 달성하면 초콜릿! 🍫';
+        challengeTotal.textContent = message;
+        resultChallengeTotal.textContent = message;
+        challengeBox.classList.toggle('clear', allClear);
+        resultChallengeBox.classList.toggle('clear', allClear);
     }
 
     function updateBestTexts() {
