@@ -242,8 +242,8 @@
                     <div class="challenge-box" id="challengeBox">
                         <div class="challenge-title">🏆 도전과제</div>
                         <div class="mission-list">
-                            <div class="mission-item" id="missionAverage"><span class="mission-name">🍓 평균 50점 이상</span><span class="mission-status" id="missionAverageStatus">⬜ 0점</span></div>
-                            <div class="mission-item" id="missionMedian"><span class="mission-name">🍓 중앙값 70점 이상</span><span class="mission-status" id="missionMedianStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="missionAverage"><span class="mission-name">🍓 평균 40점 이상</span><span class="mission-status" id="missionAverageStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="missionMedian"><span class="mission-name">🍓 중앙값 60점 이상</span><span class="mission-status" id="missionMedianStatus">⬜ 0점</span></div>
                             <div class="mission-item" id="missionMode"><span class="mission-name">🍓 최빈값 100점 이상</span><span class="mission-status" id="missionModeStatus">⬜ 0점</span></div>
                         </div>
                         <div class="challenge-total" id="challengeTotal">3개 모두 달성해 보세요!</div>
@@ -270,8 +270,8 @@
                     <div class="challenge-box result-challenge" id="resultChallengeBox">
                         <div class="challenge-title">🏆 도전과제</div>
                         <div class="mission-list">
-                            <div class="mission-item" id="resultMissionAverage"><span class="mission-name">🍓 평균 50점 이상</span><span class="mission-status" id="resultMissionAverageStatus">⬜ 0점</span></div>
-                            <div class="mission-item" id="resultMissionMedian"><span class="mission-name">🍓 중앙값 70점 이상</span><span class="mission-status" id="resultMissionMedianStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="resultMissionAverage"><span class="mission-name">🍓 평균 40점 이상</span><span class="mission-status" id="resultMissionAverageStatus">⬜ 0점</span></div>
+                            <div class="mission-item" id="resultMissionMedian"><span class="mission-name">🍓 중앙값 60점 이상</span><span class="mission-status" id="resultMissionMedianStatus">⬜ 0점</span></div>
                             <div class="mission-item" id="resultMissionMode"><span class="mission-name">🍓 최빈값 100점 이상</span><span class="mission-status" id="resultMissionModeStatus">⬜ 0점</span></div>
                         </div>
                         <div class="challenge-total" id="resultChallengeTotal">3개 모두 달성해 보세요!</div>
@@ -498,11 +498,11 @@
 
     function updateChallengeDisplay() {
         const s = getChallengeScores();
-        const averageDone = updateMissionRow(missionAverage, missionAverageStatus, s.average, 50);
-        const medianDone = updateMissionRow(missionMedian, missionMedianStatus, s.median, 70);
+        const averageDone = updateMissionRow(missionAverage, missionAverageStatus, s.average, 40);
+        const medianDone = updateMissionRow(missionMedian, missionMedianStatus, s.median, 60);
         const modeDone = updateMissionRow(missionMode, missionModeStatus, s.mode, 100);
-        updateMissionRow(resultMissionAverage, resultMissionAverageStatus, s.average, 50);
-        updateMissionRow(resultMissionMedian, resultMissionMedianStatus, s.median, 70);
+        updateMissionRow(resultMissionAverage, resultMissionAverageStatus, s.average, 40);
+        updateMissionRow(resultMissionMedian, resultMissionMedianStatus, s.median, 60);
         updateMissionRow(resultMissionMode, resultMissionModeStatus, s.mode, 100);
 
         const allClear = averageDone && medianDone && modeDone;
