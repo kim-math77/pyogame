@@ -118,6 +118,89 @@
     .legend-icon { width:28px; height:28px; object-fit:contain; vertical-align:middle; }
     .type-inline { display:inline-flex; align-items:center; gap:6px; margin-right:12px; }
     .type-inline img { width:22px; height:22px; object-fit:contain; vertical-align:middle; }
+
+
+    /* ===== 진격의 괴물: 태블릿/가상 키패드 반응형 보정 ===== */
+    .container.monster-active #gameArea:not(.roulette-active) canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    @media (max-width: 1100px), (max-height: 820px) {
+        body { padding: 10px; }
+        .container.monster-active {
+            max-width: calc(100vw - 20px);
+            min-height: 0;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+        .container.monster-active > h1 {
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+        .container.monster-active #monsterPlayLayout {
+            width: 100%;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .container.monster-active #monsterSidePanel {
+            width: clamp(190px, 27vw, 250px);
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .container.monster-active .legend {
+            padding: 10px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        .container.monster-active .legend-row { margin: 3px 0; }
+        .container.monster-active .legend-icon { width: 24px; height: 24px; }
+        .container.monster-active #stage1UI { padding: 10px; }
+        .container.monster-active #answerInput { font-size: 22px; padding: 8px; }
+        .container.monster-active #fireActionBtn { font-size: 20px; padding: 9px 18px; }
+    }
+
+    /* 실제 보이는 화면 높이에 맞춰 JS가 gameArea 크기를 조절한다. */
+    .container.monster-active #gameArea.monster-responsive {
+        flex: 0 0 auto;
+    }
+
+    /* 숫자 키패드가 올라온 동안은 입력칸을 최우선으로 보이게 한다. */
+    html.monster-keyboard-open body { padding: 4px; }
+    html.monster-keyboard-open .container.monster-active {
+        padding: 6px;
+        max-width: calc(100vw - 8px);
+    }
+    html.monster-keyboard-open .container.monster-active > h1 {
+        display: none;
+    }
+    html.monster-keyboard-open .container.monster-active #monsterPlayLayout {
+        gap: 6px;
+    }
+    html.monster-keyboard-open .container.monster-active #monsterSidePanel {
+        width: clamp(170px, 29vw, 220px);
+        gap: 6px;
+    }
+    html.monster-keyboard-open .container.monster-active #stage1UI {
+        order: 0;
+        padding: 7px;
+    }
+    html.monster-keyboard-open .container.monster-active #legendBox {
+        order: 1;
+        display: none !important;
+    }
+    html.monster-keyboard-open .container.monster-active #answerInput {
+        font-size: 20px;
+        padding: 7px;
+    }
+    html.monster-keyboard-open .container.monster-active #fireActionBtn {
+        font-size: 18px;
+        padding: 7px 12px;
+    }
+    html.monster-keyboard-open .container.monster-active .back-btn {
+        display: none;
+    }
+
 </style>
 </head>
 <body>
@@ -279,6 +362,7 @@
         document.getElementById("subLobby").style.display = "flex";
         document.querySelector(".container").classList.remove("roulette-active", "monster-active");
         document.getElementById("gameArea").classList.remove("roulette-active");
+        restoreMonsterGameSize();
         
         clearInterval(intervalId);
         cancelAnimationFrame(animId);
@@ -298,6 +382,7 @@
             document.getElementById("subLobby").style.display = "none";
             document.getElementById("gameArea").style.display = "block";
             document.getElementById("menuScreen").style.display = "flex";
+            requestAnimationFrame(fitMonsterGameToViewport);
         });
 
         document.getElementById("btnEnterDetective").addEventListener("click", () => {
@@ -326,6 +411,7 @@
                 else { alert("비밀번호가 틀렸습니다! ❌"); return; }
             }
             document.querySelector(".container").classList.remove("monster-active");
+            restoreMonsterGameSize();
             document.querySelector(".container").classList.add("roulette-active");
             document.getElementById("gameArea").classList.add("roulette-active");
             document.getElementById("subLobby").style.display = "none";
@@ -458,6 +544,52 @@
         return { data: arr, answer: targetAnswer };
     }
 
+    function fitMonsterGameToViewport() {
+        const container = document.querySelector(".container");
+        const gameArea = document.getElementById("gameArea");
+        const sidePanel = document.getElementById("monsterSidePanel");
+        if (!container || !gameArea || !sidePanel) return;
+        if (!container.classList.contains("monster-active") || gameArea.classList.contains("roulette-active")) return;
+
+        const vv = window.visualViewport;
+        const visibleWidth = vv ? vv.width : window.innerWidth;
+        const visibleHeight = vv ? vv.height : window.innerHeight;
+        const keyboardOpen = vv ? (window.innerHeight - vv.height > 140) : false;
+        document.documentElement.classList.toggle("monster-keyboard-open", keyboardOpen);
+
+        // PC에서는 원래 600×666 크기를 유지하고, 작은 화면에서만 비율대로 축소합니다.
+        const sideWidth = sidePanel.getBoundingClientRect().width || 240;
+        const horizontalReserve = sideWidth + (keyboardOpen ? 30 : 55);
+        const maxByWidth = Math.max(260, visibleWidth - horizontalReserve);
+
+        // 제목/바깥 여백을 제외한 실제 사용 가능 높이. 키패드가 올라오면 더 공격적으로 줄입니다.
+        const verticalReserve = keyboardOpen ? 18 : (visibleHeight < 850 ? 105 : 125);
+        const maxHeight = Math.max(285, visibleHeight - verticalReserve);
+        const maxByHeight = maxHeight * (600 / 666);
+
+        const gameWidth = Math.min(600, maxByWidth, maxByHeight);
+        const gameHeight = gameWidth * (666 / 600);
+
+        gameArea.style.width = `${Math.round(gameWidth)}px`;
+        gameArea.style.height = `${Math.round(gameHeight)}px`;
+        gameArea.classList.add("monster-responsive");
+    }
+
+    function restoreMonsterGameSize() {
+        document.documentElement.classList.remove("monster-keyboard-open");
+        const gameArea = document.getElementById("gameArea");
+        if (!gameArea || gameArea.classList.contains("roulette-active")) return;
+        gameArea.style.width = "";
+        gameArea.style.height = "";
+        gameArea.classList.remove("monster-responsive");
+    }
+
+    window.addEventListener("resize", fitMonsterGameToViewport);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", fitMonsterGameToViewport);
+        window.visualViewport.addEventListener("scroll", fitMonsterGameToViewport);
+    }
+
     function startMonsterGame(diff) {
         if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, minSpeed: 0.2, maxSpeed: 0.3 };
         else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, minSpeed: 0.3, maxSpeed: 0.4 };
@@ -471,6 +603,8 @@
         document.getElementById("killDisplay").style.display = "block";
         document.getElementById("legendBox").style.display = "block";
         document.getElementById("answerInput").focus();
+        requestAnimationFrame(fitMonsterGameToViewport);
+        setTimeout(fitMonsterGameToViewport, 250);
         
         state = "STAGE1"; stage1Timer = 100; spawnTimer = 0; killCount = 0;
         document.getElementById("timerDisplay").innerText = `남은 시간: 100초`;
@@ -508,10 +642,21 @@
         const baseSpeed = currentDifficulty.minSpeed +
             Math.random() * (currentDifficulty.maxSpeed - currentDifficulty.minSpeed);
 
+        const dataStr = q.data.join(', ');
+
+        // 긴 숫자열이 화면 좌우에서 잘리지 않도록 텍스트 폭만큼 안전 여백을 확보합니다.
+        ctx.save();
+        ctx.font = "bold 16px Arial";
+        const textHalfWidth = ctx.measureText(dataStr).width / 2;
+        ctx.restore();
+        const edgeMargin = Math.max(38, textHalfWidth + 10);
+        const safeRange = Math.max(1, canvas.width - edgeMargin * 2);
+        const spawnX = edgeMargin + Math.random() * safeRange;
+
         monsters.push({
             id: Math.random().toString(36).substr(2, 9),
-            x: 50 + Math.random() * (canvas.width - 100), y: -50,
-            monsterType: selected.type, label: selected.label, dataStr: q.data.join(', '), answer: q.answer,
+            x: spawnX, y: -50,
+            monsterType: selected.type, label: selected.label, dataStr: dataStr, answer: q.answer,
             speed: baseSpeed, targeted: false
         });
     }
