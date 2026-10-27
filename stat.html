@@ -329,8 +329,8 @@
 // 외부(콘솔)에서 절대 접근할 수 없도록 클로저(IIFE) 패턴으로 완전히 숨깁니다.
 (function() {
     // 철통 보안용 내부 변수 (새로고침을 하지 않으므로 닫기 전까지 유지됨)
-    let isMonsterUnlocked = false;
-    let isRouletteUnlocked = false;
+    let isMonsterUnlocked = sessionStorage.getItem("monsterGameUnlocked") === "true";
+    let isRouletteUnlocked = sessionStorage.getItem("rouletteGameUnlocked") === "true";
     let selectedMonsterDifficulty = 'easy';
 
     const isMonsterTouchDevice =
@@ -442,8 +442,10 @@
         document.getElementById("btnEnterMonster").addEventListener("click", () => {
             if (!isMonsterUnlocked) {
                 const pwd = prompt("진격의 괴물 비밀번호를 입력하세요 🔒");
-                if (verifyAuth(pwd, 'monster')) isMonsterUnlocked = true;
-                else { alert("비밀번호가 틀렸습니다! ❌"); return; }
+                if (verifyAuth(pwd, 'monster')) {
+                    isMonsterUnlocked = true;
+                    sessionStorage.setItem("monsterGameUnlocked", "true");
+                } else { alert("비밀번호가 틀렸습니다! ❌"); return; }
             }
             document.querySelector(".container").classList.remove("roulette-active");
             document.querySelector(".container").classList.add("monster-active");
@@ -475,8 +477,10 @@
         document.getElementById("btnEnterRoulette").addEventListener("click", () => {
             if (!isRouletteUnlocked) {
                 const pwd = prompt("러시안 룰렛 비밀번호를 입력하세요 🔒");
-                if (verifyAuth(pwd, 'roulette')) isRouletteUnlocked = true;
-                else { alert("비밀번호가 틀렸습니다! ❌"); return; }
+                if (verifyAuth(pwd, 'roulette')) {
+                    isRouletteUnlocked = true;
+                    sessionStorage.setItem("rouletteGameUnlocked", "true");
+                } else { alert("비밀번호가 틀렸습니다! ❌"); return; }
             }
             document.querySelector(".container").classList.remove("monster-active");
             document.querySelector(".container").classList.add("roulette-active");
