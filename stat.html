@@ -120,19 +120,116 @@
     .type-inline img { width:22px; height:22px; object-fit:contain; vertical-align:middle; }
 
 
-    /* ===== 진격의 괴물: 태블릿 화면 대응 (기존 게임 크기/좌표는 유지하고 전체만 비율 축소) ===== */
-    body.monster-tablet-mode { overflow-x: hidden; }
+    /* ===== 진격의 괴물: 태블릿 전용 자체 숫자 키패드 ===== */
+    #monsterTouchKeypad {
+        display: none;
+        position: absolute;
+        top: 62px;
+        left: 14px;
+        width: 178px;
+        z-index: 15;
+        padding: 8px;
+        border-radius: 12px;
+        background: rgba(244, 251, 255, 0.94);
+        border: 2px solid #8dbbd3;
+        box-shadow: 0 4px 12px rgba(70,110,140,.20);
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    #monsterTouchAnswer {
+        width: 100%;
+        height: 34px;
+        margin-bottom: 6px;
+        border: 2px solid #9fc9df;
+        border-radius: 8px;
+        background: #fff;
+        color: #26384a;
+        font-size: 19px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 30px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+    .monster-key-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+    }
+    .monster-key {
+        min-width: 0;
+        height: 34px;
+        padding: 0;
+        border: 0;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #26384a;
+        font-size: 17px;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(70,110,140,.16);
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+    .monster-key:active { transform: translateY(1px); background: #e6f4fb; }
+    .monster-key.delete { background: #f8e9e7; color: #a94442; }
+    .monster-key.fire {
+        grid-column: 1 / -1;
+        height: 36px;
+        background: #e74c3c;
+        color: white;
+        font-size: 17px;
+        box-shadow: 0 3px #c0392b;
+    }
+    .monster-key.fire:active { box-shadow: 0 1px #c0392b; }
 
-    .container.monster-active #monsterPlayLayout {
-        transform-origin: top center;
-        will-change: transform;
+    /* 터치 기기에서는 운영체제 키보드 대신 게임 자체 키패드를 사용 */
+    body.touch-mode .container.monster-active #monsterSidePanel {
+        display: none;
+    }
+    body.touch-mode .container.monster-active #monsterPlayLayout {
+        display: block;
+    }
+    body.touch-mode .container.monster-active #gameArea:not(.roulette-active) {
+        width: min(600px, calc(100vw - 42px), 76vh);
+        height: auto;
+        aspect-ratio: 600 / 666;
+    }
+    body.touch-mode .container.monster-active #gameArea:not(.roulette-active) canvas {
+        width: 100%;
+        height: 100%;
+    }
+    body.touch-mode .container.monster-active #monsterTouchKeypad {
+        display: block;
+    }
+    body.touch-mode .container.monster-active {
+        max-width: calc(100vw - 16px);
+        min-height: 0;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+    body.touch-mode .container.monster-active > h1 {
+        margin-bottom: 8px;
+        font-size: 22px;
+    }
+    body.touch-mode .container.monster-active .back-btn {
+        margin-top: 12px;
     }
 
-    /* 가상 숫자 키패드가 올라왔을 때는 불필요한 주변 요소를 숨겨 게임과 입력칸을 우선 표시 */
-    body.monster-tablet-mode.monster-keyboard-open { padding-top: 4px; }
-    body.monster-tablet-mode.monster-keyboard-open .container.monster-active > h1 { display: none; }
-    body.monster-tablet-mode.monster-keyboard-open .container.monster-active #legendBox { display: none !important; }
-    body.monster-tablet-mode.monster-keyboard-open .container.monster-active .back-btn { display: none; }
+    @media (orientation: portrait) and (max-width: 1000px) {
+        body.touch-mode { padding: 6px; }
+        body.touch-mode .container.monster-active {
+            max-width: calc(100vw - 12px);
+            padding: 6px;
+        }
+        body.touch-mode .container.monster-active #gameArea:not(.roulette-active) {
+            width: min(600px, calc(100vw - 28px), 76vh);
+        }
+        body.touch-mode .container.monster-active #monsterTouchKeypad {
+            left: 10px;
+            width: 166px;
+        }
+    }
 
 </style>
 </head>
@@ -174,6 +271,29 @@
             <div id="killDisplay" class="hud" style="display:none;">처치: 0</div>
             <div id="stageInfo" class="hud" style="display:none;">진격의 괴물</div>
             <div id="dangerWarning">⚠ 위험! 괴물이 성벽에 접근 중!</div>
+
+
+            <div id="monsterTouchKeypad" aria-label="진격의 괴물 숫자 키패드">
+                <div id="monsterTouchAnswer">&nbsp;</div>
+                <div class="monster-key-grid">
+                    <button type="button" class="monster-key" data-key="1">1</button>
+                    <button type="button" class="monster-key" data-key="2">2</button>
+                    <button type="button" class="monster-key" data-key="3">3</button>
+                    <button type="button" class="monster-key delete" data-key="backspace">⌫</button>
+
+                    <button type="button" class="monster-key" data-key="4">4</button>
+                    <button type="button" class="monster-key" data-key="5">5</button>
+                    <button type="button" class="monster-key" data-key="6">6</button>
+                    <button type="button" class="monster-key" data-key=".">.</button>
+
+                    <button type="button" class="monster-key" data-key="7">7</button>
+                    <button type="button" class="monster-key" data-key="8">8</button>
+                    <button type="button" class="monster-key" data-key="9">9</button>
+                    <button type="button" class="monster-key" data-key="0">0</button>
+
+                    <button type="button" class="monster-key fire" id="monsterTouchFire">🔥 발사!</button>
+                </div>
+            </div>
 
             <div id="menuScreen" class="screen-overlay">
                 <h2 style="color: #222; margin-bottom:4px;">🧟 진격의 괴물</h2>
@@ -264,6 +384,39 @@
     let isRouletteUnlocked = false;
     let selectedMonsterDifficulty = 'easy';
 
+    const isMonsterTouchMode =
+        (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
+        (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+
+    if (isMonsterTouchMode) {
+        document.body.classList.add("touch-mode");
+    }
+
+    function syncMonsterTouchAnswer() {
+        const inputEl = document.getElementById("answerInput");
+        const displayEl = document.getElementById("monsterTouchAnswer");
+        if (!inputEl || !displayEl) return;
+        displayEl.textContent = inputEl.value || "\u00A0";
+    }
+
+    function pressMonsterTouchKey(key) {
+        const inputEl = document.getElementById("answerInput");
+        if (!inputEl || state !== "STAGE1") return;
+
+        let value = inputEl.value || "";
+
+        if (key === "backspace") {
+            value = value.slice(0, -1);
+        } else if (key === ".") {
+            if (!value.includes(".")) value = value ? value + "." : "0.";
+        } else {
+            if (value.length < 6) value += key;
+        }
+
+        inputEl.value = value;
+        syncMonsterTouchAnswer();
+    }
+
     // 수학적 일방향 해시 검증
     function verifyAuth(pwd, type) {
         if (!pwd) return false;
@@ -295,7 +448,6 @@
         document.getElementById("subLobby").style.display = "flex";
         document.querySelector(".container").classList.remove("roulette-active", "monster-active");
         document.getElementById("gameArea").classList.remove("roulette-active");
-        restoreMonsterLayout();
         
         clearInterval(intervalId);
         cancelAnimationFrame(animId);
@@ -303,6 +455,21 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+
+        const answerInputEl = document.getElementById("answerInput");
+        if (isMonsterTouchMode && answerInputEl) {
+            answerInputEl.readOnly = true;
+            answerInputEl.setAttribute("inputmode", "none");
+        }
+
+        document.querySelectorAll("#monsterTouchKeypad .monster-key[data-key]").forEach((btn) => {
+            btn.addEventListener("click", () => pressMonsterTouchKey(btn.dataset.key));
+        });
+        document.getElementById("monsterTouchFire").addEventListener("click", () => {
+            if (isMonsterUnlocked && state === "STAGE1") fireCannon();
+        });
+        syncMonsterTouchAnswer();
+
         document.getElementById("btnEnterMonster").addEventListener("click", () => {
             if (!isMonsterUnlocked) {
                 const pwd = prompt("진격의 괴물 비밀번호를 입력하세요 🔒");
@@ -315,7 +482,6 @@
             document.getElementById("subLobby").style.display = "none";
             document.getElementById("gameArea").style.display = "block";
             document.getElementById("menuScreen").style.display = "flex";
-            requestAnimationFrame(fitMonsterLayoutToViewport);
         });
 
         document.getElementById("btnEnterDetective").addEventListener("click", () => {
@@ -344,7 +510,6 @@
                 else { alert("비밀번호가 틀렸습니다! ❌"); return; }
             }
             document.querySelector(".container").classList.remove("monster-active");
-            restoreMonsterLayout();
             document.querySelector(".container").classList.add("roulette-active");
             document.getElementById("gameArea").classList.add("roulette-active");
             document.getElementById("subLobby").style.display = "none";
@@ -383,59 +548,6 @@
 
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-
-
-    // 진격의 괴물은 내부 600×666 좌표계를 그대로 두고, 화면에 보이는 크기만 통째로 축소합니다.
-    // 이렇게 하면 기존 괴물 이동/충돌/난이도/메뉴 배치를 건드리지 않고 태블릿에서도 전체 화면을 볼 수 있습니다.
-    function fitMonsterLayoutToViewport() {
-        const container = document.querySelector('.container');
-        const layout = document.getElementById('monsterPlayLayout');
-        const gameArea = document.getElementById('gameArea');
-        if (!container || !layout || !gameArea) return;
-        if (!container.classList.contains('monster-active') || gameArea.classList.contains('roulette-active')) return;
-
-        const vv = window.visualViewport;
-        const visibleWidth = vv ? vv.width : window.innerWidth;
-        const visibleHeight = vv ? vv.height : window.innerHeight;
-        const keyboardOpen = vv ? (window.innerHeight - vv.height > 140) : false;
-
-        document.body.classList.add('monster-tablet-mode');
-        document.body.classList.toggle('monster-keyboard-open', keyboardOpen);
-
-        // 원래 진격의 괴물 레이아웃: 게임판 600 + 간격 18 + 사이드패널 270 = 약 888px
-        const designWidth = 888;
-        const designHeight = 666;
-
-        // 일반 화면에서는 제목/여백을 남기고, 키패드가 올라오면 게임 자체를 최우선으로 맞춥니다.
-        const widthReserve = keyboardOpen ? 12 : 36;
-        const heightReserve = keyboardOpen ? 12 : 92;
-        const availableWidth = Math.max(320, visibleWidth - widthReserve);
-        const availableHeight = Math.max(260, visibleHeight - heightReserve);
-
-        let scale = Math.min(1, availableWidth / designWidth, availableHeight / designHeight);
-        // 지나치게 미세한 변화로 화면이 흔들리지 않도록 소수 셋째 자리까지만 사용합니다.
-        scale = Math.floor(scale * 1000) / 1000;
-
-        layout.style.transform = `scale(${scale})`;
-        // transform은 실제 레이아웃 높이를 줄이지 않으므로, 아래 빈 공간만 보정합니다.
-        layout.style.marginBottom = `${-(designHeight * (1 - scale))}px`;
-    }
-
-    function restoreMonsterLayout() {
-        const layout = document.getElementById('monsterPlayLayout');
-        if (layout) {
-            layout.style.transform = '';
-            layout.style.marginBottom = '';
-        }
-        document.body.classList.remove('monster-tablet-mode', 'monster-keyboard-open');
-    }
-
-    window.addEventListener('resize', fitMonsterLayoutToViewport);
-    window.addEventListener('orientationchange', () => setTimeout(fitMonsterLayoutToViewport, 120));
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', fitMonsterLayoutToViewport);
-        window.visualViewport.addEventListener('scroll', fitMonsterLayoutToViewport);
-    }
     
     let state = "MENU", stage1Timer = 100, spawnTimer = 0; 
     let monsters = [], projectiles = [], explosions = [];
@@ -542,9 +654,8 @@
         document.getElementById("stageInfo").style.display = "block";
         document.getElementById("killDisplay").style.display = "block";
         document.getElementById("legendBox").style.display = "block";
-        document.getElementById("answerInput").focus();
-        requestAnimationFrame(fitMonsterLayoutToViewport);
-        setTimeout(fitMonsterLayoutToViewport, 250);
+        if (!isMonsterTouchMode) document.getElementById("answerInput").focus();
+        syncMonsterTouchAnswer();
         
         state = "STAGE1"; stage1Timer = 100; spawnTimer = 0; killCount = 0;
         document.getElementById("timerDisplay").innerText = `남은 시간: 100초`;
@@ -583,18 +694,17 @@
             Math.random() * (currentDifficulty.maxSpeed - currentDifficulty.minSpeed);
 
         const dataStr = q.data.join(', ');
-
-        // 자료 숫자열이 캔버스 좌우 끝에서 잘리지 않도록 실제 글자 폭만큼 안전 여백을 둡니다.
         ctx.save();
         ctx.font = "bold 16px Arial";
         const textHalfWidth = ctx.measureText(dataStr).width / 2;
         ctx.restore();
-        const edgeMargin = Math.min(canvas.width / 2 - 10, Math.max(50, textHalfWidth + 12));
-        const safeWidth = Math.max(1, canvas.width - edgeMargin * 2);
+
+        const edgeMargin = Math.max(50, Math.min(150, textHalfWidth + 12));
+        const spawnX = edgeMargin + Math.random() * Math.max(1, canvas.width - edgeMargin * 2);
 
         monsters.push({
             id: Math.random().toString(36).substr(2, 9),
-            x: edgeMargin + Math.random() * safeWidth, y: -50,
+            x: spawnX, y: -50,
             monsterType: selected.type, label: selected.label, dataStr: dataStr, answer: q.answer,
             speed: baseSpeed, targeted: false
         });
@@ -602,7 +712,10 @@
 
     function fireCannon() {
         const inputEl = document.getElementById("answerInput");
-        const val = parseFloat(inputEl.value); inputEl.value = ''; inputEl.focus();
+        const val = parseFloat(inputEl.value);
+        inputEl.value = '';
+        if (!isMonsterTouchMode) inputEl.focus();
+        syncMonsterTouchAnswer();
         if (isNaN(val)) return;
 
         let target = null; let maxY = -999;
