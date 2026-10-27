@@ -120,115 +120,67 @@
     .type-inline img { width:22px; height:22px; object-fit:contain; vertical-align:middle; }
 
 
-    /* ===== 진격의 괴물: 태블릿 전용 자체 숫자 키패드 ===== */
-    #monsterTouchKeypad {
+    /* ===== 진격의 괴물: 태블릿용 자체 숫자 키패드 (기존 레이아웃 유지) ===== */
+    #monsterKeypad {
         display: none;
-        position: absolute;
-        top: 62px;
-        left: 14px;
-        width: 178px;
-        z-index: 15;
-        padding: 8px;
-        border-radius: 12px;
-        background: rgba(244, 251, 255, 0.94);
-        border: 2px solid #8dbbd3;
-        box-shadow: 0 4px 12px rgba(70,110,140,.20);
-        box-sizing: border-box;
-        user-select: none;
-        -webkit-user-select: none;
-    }
-    #monsterTouchAnswer {
         width: 100%;
-        height: 34px;
-        margin-bottom: 6px;
-        border: 2px solid #9fc9df;
+        box-sizing: border-box;
+        padding: 10px;
+        background: #f4fbff;
+        border: 3px solid #9fc9df;
+        border-radius: 12px;
+        box-shadow: 0 5px 14px rgba(67,110,138,.14);
+    }
+    #monsterKeypadDisplay {
+        width: 100%;
+        height: 42px;
+        margin-bottom: 8px;
+        box-sizing: border-box;
+        border: 2px solid #b9d8e8;
         border-radius: 8px;
         background: #fff;
         color: #26384a;
-        font-size: 19px;
+        font-size: 22px;
         font-weight: bold;
+        line-height: 38px;
         text-align: center;
-        line-height: 30px;
-        box-sizing: border-box;
         overflow: hidden;
     }
-    .monster-key-grid {
+    .monster-keypad-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 5px;
+        gap: 7px;
     }
-    .monster-key {
-        min-width: 0;
-        height: 34px;
-        padding: 0;
-        border: 0;
-        border-radius: 7px;
-        background: #ffffff;
+    .monster-keypad-btn {
+        height: 42px;
+        border: none;
+        border-radius: 8px;
+        background: #fff;
         color: #26384a;
-        font-size: 17px;
+        font-size: 20px;
         font-weight: bold;
-        box-shadow: 0 2px 5px rgba(70,110,140,.16);
         cursor: pointer;
+        box-shadow: 0 2px 5px rgba(70,110,140,.16);
         touch-action: manipulation;
     }
-    .monster-key:active { transform: translateY(1px); background: #e6f4fb; }
-    .monster-key.delete { background: #f8e9e7; color: #a94442; }
-    .monster-key.fire {
+    .monster-keypad-btn:active {
+        transform: translateY(1px);
+        background: #e7f4fb;
+    }
+    .monster-keypad-btn.delete {
+        background: #fbe9e7;
+        color: #a94442;
+    }
+    .monster-keypad-btn.fire {
         grid-column: 1 / -1;
-        height: 36px;
         background: #e74c3c;
         color: white;
-        font-size: 17px;
         box-shadow: 0 3px #c0392b;
     }
-    .monster-key.fire:active { box-shadow: 0 1px #c0392b; }
 
-    /* 터치 기기에서는 운영체제 키보드 대신 게임 자체 키패드를 사용 */
-    body.touch-mode .container.monster-active #monsterSidePanel {
-        display: none;
-    }
-    body.touch-mode .container.monster-active #monsterPlayLayout {
+    /* 터치 기기에서만 자체 키패드를 표시 */
+    body.monster-touch-device .container.monster-active #monsterKeypad {
         display: block;
-    }
-    body.touch-mode .container.monster-active #gameArea:not(.roulette-active) {
-        width: min(600px, calc(100vw - 42px), 76vh);
-        height: auto;
-        aspect-ratio: 600 / 666;
-    }
-    body.touch-mode .container.monster-active #gameArea:not(.roulette-active) canvas {
-        width: 100%;
-        height: 100%;
-    }
-    body.touch-mode .container.monster-active #monsterTouchKeypad {
-        display: block;
-    }
-    body.touch-mode .container.monster-active {
-        max-width: calc(100vw - 16px);
-        min-height: 0;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-    body.touch-mode .container.monster-active > h1 {
-        margin-bottom: 8px;
-        font-size: 22px;
-    }
-    body.touch-mode .container.monster-active .back-btn {
-        margin-top: 12px;
-    }
-
-    @media (orientation: portrait) and (max-width: 1000px) {
-        body.touch-mode { padding: 6px; }
-        body.touch-mode .container.monster-active {
-            max-width: calc(100vw - 12px);
-            padding: 6px;
-        }
-        body.touch-mode .container.monster-active #gameArea:not(.roulette-active) {
-            width: min(600px, calc(100vw - 28px), 76vh);
-        }
-        body.touch-mode .container.monster-active #monsterTouchKeypad {
-            left: 10px;
-            width: 166px;
-        }
     }
 
 </style>
@@ -271,29 +223,6 @@
             <div id="killDisplay" class="hud" style="display:none;">처치: 0</div>
             <div id="stageInfo" class="hud" style="display:none;">진격의 괴물</div>
             <div id="dangerWarning">⚠ 위험! 괴물이 성벽에 접근 중!</div>
-
-
-            <div id="monsterTouchKeypad" aria-label="진격의 괴물 숫자 키패드">
-                <div id="monsterTouchAnswer">&nbsp;</div>
-                <div class="monster-key-grid">
-                    <button type="button" class="monster-key" data-key="1">1</button>
-                    <button type="button" class="monster-key" data-key="2">2</button>
-                    <button type="button" class="monster-key" data-key="3">3</button>
-                    <button type="button" class="monster-key delete" data-key="backspace">⌫</button>
-
-                    <button type="button" class="monster-key" data-key="4">4</button>
-                    <button type="button" class="monster-key" data-key="5">5</button>
-                    <button type="button" class="monster-key" data-key="6">6</button>
-                    <button type="button" class="monster-key" data-key=".">.</button>
-
-                    <button type="button" class="monster-key" data-key="7">7</button>
-                    <button type="button" class="monster-key" data-key="8">8</button>
-                    <button type="button" class="monster-key" data-key="9">9</button>
-                    <button type="button" class="monster-key" data-key="0">0</button>
-
-                    <button type="button" class="monster-key fire" id="monsterTouchFire">🔥 발사!</button>
-                </div>
-            </div>
 
             <div id="menuScreen" class="screen-overlay">
                 <h2 style="color: #222; margin-bottom:4px;">🧟 진격의 괴물</h2>
@@ -370,6 +299,29 @@
                 <input type="number" id="answerInput" placeholder="정답 입력" autocomplete="off">
                 <button id="fireActionBtn">발사!</button>
             </div>
+
+            <div id="monsterKeypad">
+                <div style="font-weight:bold; color:#2878a8; margin-bottom:7px;">숫자 키패드</div>
+                <div id="monsterKeypadDisplay">&nbsp;</div>
+                <div class="monster-keypad-grid">
+                    <button type="button" class="monster-keypad-btn" data-mkey="1">1</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="2">2</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="3">3</button>
+                    <button type="button" class="monster-keypad-btn delete" data-mkey="backspace">⌫</button>
+
+                    <button type="button" class="monster-keypad-btn" data-mkey="4">4</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="5">5</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="6">6</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey=".">.</button>
+
+                    <button type="button" class="monster-keypad-btn" data-mkey="7">7</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="8">8</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="9">9</button>
+                    <button type="button" class="monster-keypad-btn" data-mkey="0">0</button>
+
+                    <button type="button" class="monster-keypad-btn fire" id="monsterKeypadFire">🔥 발사!</button>
+                </div>
+            </div>
         </div>
         </div>
         
@@ -384,37 +336,39 @@
     let isRouletteUnlocked = false;
     let selectedMonsterDifficulty = 'easy';
 
-    const isMonsterTouchMode =
+    const isMonsterTouchDevice =
         (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
         (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
 
-    if (isMonsterTouchMode) {
-        document.body.classList.add("touch-mode");
+    if (isMonsterTouchDevice) {
+        document.body.classList.add("monster-touch-device");
     }
 
-    function syncMonsterTouchAnswer() {
-        const inputEl = document.getElementById("answerInput");
-        const displayEl = document.getElementById("monsterTouchAnswer");
-        if (!inputEl || !displayEl) return;
-        displayEl.textContent = inputEl.value || "\u00A0";
+    function updateMonsterKeypadDisplay() {
+        const input = document.getElementById("answerInput");
+        const display = document.getElementById("monsterKeypadDisplay");
+        if (!input || !display) return;
+        display.textContent = input.value || "\u00A0";
     }
 
-    function pressMonsterTouchKey(key) {
-        const inputEl = document.getElementById("answerInput");
-        if (!inputEl || state !== "STAGE1") return;
+    function inputMonsterKey(key) {
+        const input = document.getElementById("answerInput");
+        if (!input || state !== "STAGE1") return;
 
-        let value = inputEl.value || "";
+        let value = input.value || "";
 
         if (key === "backspace") {
             value = value.slice(0, -1);
         } else if (key === ".") {
-            if (!value.includes(".")) value = value ? value + "." : "0.";
+            if (!value.includes(".")) {
+                value = value ? value + "." : "0.";
+            }
         } else {
             if (value.length < 6) value += key;
         }
 
-        inputEl.value = value;
-        syncMonsterTouchAnswer();
+        input.value = value;
+        updateMonsterKeypadDisplay();
     }
 
     // 수학적 일방향 해시 검증
@@ -456,19 +410,23 @@
 
     document.addEventListener("DOMContentLoaded", () => {
 
-        const answerInputEl = document.getElementById("answerInput");
-        if (isMonsterTouchMode && answerInputEl) {
-            answerInputEl.readOnly = true;
-            answerInputEl.setAttribute("inputmode", "none");
+        const monsterAnswerInput = document.getElementById("answerInput");
+
+        if (isMonsterTouchDevice && monsterAnswerInput) {
+            // 태블릿에서는 운영체제 키보드가 뜨지 않도록 입력칸을 읽기 전용으로 사용
+            monsterAnswerInput.readOnly = true;
+            monsterAnswerInput.setAttribute("inputmode", "none");
         }
 
-        document.querySelectorAll("#monsterTouchKeypad .monster-key[data-key]").forEach((btn) => {
-            btn.addEventListener("click", () => pressMonsterTouchKey(btn.dataset.key));
+        document.querySelectorAll("#monsterKeypad [data-mkey]").forEach((btn) => {
+            btn.addEventListener("click", () => inputMonsterKey(btn.dataset.mkey));
         });
-        document.getElementById("monsterTouchFire").addEventListener("click", () => {
+
+        document.getElementById("monsterKeypadFire").addEventListener("click", () => {
             if (isMonsterUnlocked && state === "STAGE1") fireCannon();
         });
-        syncMonsterTouchAnswer();
+
+        updateMonsterKeypadDisplay();
 
         document.getElementById("btnEnterMonster").addEventListener("click", () => {
             if (!isMonsterUnlocked) {
@@ -654,8 +612,8 @@
         document.getElementById("stageInfo").style.display = "block";
         document.getElementById("killDisplay").style.display = "block";
         document.getElementById("legendBox").style.display = "block";
-        if (!isMonsterTouchMode) document.getElementById("answerInput").focus();
-        syncMonsterTouchAnswer();
+        if (!isMonsterTouchDevice) document.getElementById("answerInput").focus();
+        updateMonsterKeypadDisplay();
         
         state = "STAGE1"; stage1Timer = 100; spawnTimer = 0; killCount = 0;
         document.getElementById("timerDisplay").innerText = `남은 시간: 100초`;
@@ -693,19 +651,10 @@
         const baseSpeed = currentDifficulty.minSpeed +
             Math.random() * (currentDifficulty.maxSpeed - currentDifficulty.minSpeed);
 
-        const dataStr = q.data.join(', ');
-        ctx.save();
-        ctx.font = "bold 16px Arial";
-        const textHalfWidth = ctx.measureText(dataStr).width / 2;
-        ctx.restore();
-
-        const edgeMargin = Math.max(50, Math.min(150, textHalfWidth + 12));
-        const spawnX = edgeMargin + Math.random() * Math.max(1, canvas.width - edgeMargin * 2);
-
         monsters.push({
             id: Math.random().toString(36).substr(2, 9),
-            x: spawnX, y: -50,
-            monsterType: selected.type, label: selected.label, dataStr: dataStr, answer: q.answer,
+            x: 50 + Math.random() * (canvas.width - 100), y: -50,
+            monsterType: selected.type, label: selected.label, dataStr: q.data.join(', '), answer: q.answer,
             speed: baseSpeed, targeted: false
         });
     }
@@ -714,8 +663,8 @@
         const inputEl = document.getElementById("answerInput");
         const val = parseFloat(inputEl.value);
         inputEl.value = '';
-        if (!isMonsterTouchMode) inputEl.focus();
-        syncMonsterTouchAnswer();
+        if (!isMonsterTouchDevice) inputEl.focus();
+        updateMonsterKeypadDisplay();
         if (isNaN(val)) return;
 
         let target = null; let maxY = -999;
