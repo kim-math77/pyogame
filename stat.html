@@ -611,10 +611,10 @@
     }
 
     function startMonsterGame(diff) {
-        if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, minSpeed: 0.18, maxSpeed: 0.27 };
-        else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, minSpeed: 0.27, maxSpeed: 0.36 };
-        else if(diff === 'hard') currentDifficulty = { minCount: 5, maxCount: 6, minSpeed: 0.36, maxSpeed: 0.45 };
-        else if(diff === 'extreme') currentDifficulty = { minCount: 6, maxCount: 7, minSpeed: 0.45, maxSpeed: 0.54 };
+        if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, minSpeed: 0.2, maxSpeed: 0.3 };
+        else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, minSpeed: 0.25, maxSpeed: 0.35 };
+        else if(diff === 'hard') currentDifficulty = { minCount: 5, maxCount: 6, minSpeed: 0.3, maxSpeed: 0.4 };
+        else if(diff === 'extreme') currentDifficulty = { minCount: 6, maxCount: 7, minSpeed: 0.35, maxSpeed: 0.45 };
 
         document.getElementById("menuScreen").style.display = "none";
         if (isMonsterTouchDevice) {
@@ -702,7 +702,7 @@
 
     function updateStage1() {
         spawnTimer++;
-        if (spawnTimer > 180) { spawnMonster(); spawnTimer = 0; }
+        if (spawnTimer > 160) { spawnMonster(); spawnTimer = 0; }
         for (let i = 0; i < monsters.length; i++) {
             monsters[i].y += monsters[i].speed;
             if (monsters[i].y > 611) { gameOver(); return; }
