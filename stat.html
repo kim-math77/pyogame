@@ -922,6 +922,11 @@
         calculateStats();
     }
 
+    function resetMagazineSelectionOnly() {
+        magInputs.forEach(inp => inp.classList.remove('selected'));
+        calculateStats();
+    }
+
     function calculateStats() {
         let sum = 0; let values = [];
         magInputs.forEach(inp => { let val = parseInt(inp.value) || 0; sum += val; values.push(val); });
@@ -1029,7 +1034,8 @@
                             document.getElementById("btnResultReturn5").addEventListener("click", resetToLobby);
                         }, 550);
                     } else {
-                        initMagazines(); isFiring = false;
+                        resetMagazineSelectionOnly();
+                        isFiring = false;
                     }
                 }
             }, 1000); 
