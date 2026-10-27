@@ -403,6 +403,7 @@
         
         clearInterval(intervalId);
         cancelAnimationFrame(animId);
+        monsterPausedByVisibility = false;
         state = "MENU";
     }
 
@@ -518,6 +519,18 @@
     const ctx = canvas.getContext("2d");
     
     let state = "MENU", stage1Timer = 100, spawnTimer = 0; 
+    let monsterPausedByVisibility = false;
+
+    function getMonsterDifficultyLabel() {
+        const labels = {
+            easy: "쉬움",
+            normal: "보통",
+            hard: "어려움",
+            extreme: "극악"
+        };
+        return labels[selectedMonsterDifficulty] || "";
+    }
+
     let monsters = [], projectiles = [], explosions = [];
     let intervalId, animId, currentDifficulty = {};
     let killCount = 0;
@@ -610,6 +623,20 @@
         return { data: arr, answer: targetAnswer };
     }
 
+    function startStage1Timer() {
+        clearInterval(intervalId);
+        intervalId = setInterval(() => {
+            if(state === "STAGE1" && !monsterPausedByVisibility) {
+                stage1Timer--;
+                const timerEl = document.getElementById("timerDisplay");
+                timerEl.innerText = `남은 시간: ${stage1Timer}초`;
+                timerEl.classList.toggle("final-countdown", stage1Timer <= 10 && stage1Timer > 5);
+                timerEl.classList.toggle("critical-countdown", stage1Timer <= 5);
+                if(stage1Timer <= 0) gameWin();
+            }
+        }, 1000);
+    }
+
     function startMonsterGame(diff) {
         if(diff === 'easy') currentDifficulty = { minCount: 3, maxCount: 4, minSpeed: 0.2, maxSpeed: 0.3 };
         else if(diff === 'normal') currentDifficulty = { minCount: 4, maxCount: 5, minSpeed: 0.25, maxSpeed: 0.35 };
@@ -639,19 +666,26 @@
         document.getElementById("gameArea").classList.remove("danger-active");
         monsters = []; projectiles = []; explosions = [];
         
-        clearInterval(intervalId);
-        intervalId = setInterval(() => {
-            if(state === "STAGE1") {
-                stage1Timer--;
-                const timerEl = document.getElementById("timerDisplay");
-                timerEl.innerText = `남은 시간: ${stage1Timer}초`;
-                timerEl.classList.toggle("final-countdown", stage1Timer <= 10 && stage1Timer > 5);
-                timerEl.classList.toggle("critical-countdown", stage1Timer <= 5);
-                if(stage1Timer <= 0) gameWin();
-            }
-        }, 1000);
-        requestAnimationFrame(gameLoop);
+        monsterPausedByVisibility = false;
+        startStage1Timer();
+        animId = requestAnimationFrame(gameLoop);
     }
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            if (state === "STAGE1") {
+                monsterPausedByVisibility = true;
+                clearInterval(intervalId);
+                cancelAnimationFrame(animId);
+            }
+        } else {
+            if (state === "STAGE1" && monsterPausedByVisibility) {
+                monsterPausedByVisibility = false;
+                startStage1Timer();
+                animId = requestAnimationFrame(gameLoop);
+            }
+        }
+    });
 
     function spawnMonster() {
         const types = [
@@ -667,10 +701,20 @@
         const baseSpeed = currentDifficulty.minSpeed +
             Math.random() * (currentDifficulty.maxSpeed - currentDifficulty.minSpeed);
 
+        const dataStr = q.data.join(', ');
+        ctx.save();
+        ctx.font = "bold 16px Arial";
+        const textHalfWidth = ctx.measureText(dataStr).width / 2;
+        ctx.restore();
+
+        // 괴물 이미지(반폭 32px)와 숫자열 폭 중 큰 쪽을 기준으로 좌우 여백 확보
+        const edgeMargin = Math.max(42, Math.min(180, textHalfWidth + 14));
+        const spawnX = edgeMargin + Math.random() * Math.max(1, canvas.width - edgeMargin * 2);
+
         monsters.push({
             id: Math.random().toString(36).substr(2, 9),
-            x: 50 + Math.random() * (canvas.width - 100), y: -50,
-            monsterType: selected.type, label: selected.label, dataStr: q.data.join(', '), answer: q.answer,
+            x: spawnX, y: 38,
+            monsterType: selected.type, label: selected.label, dataStr: dataStr, answer: q.answer,
             speed: baseSpeed, targeted: false
         });
     }
@@ -697,7 +741,7 @@
     }
 
     function gameLoop() {
-        if (state === "STAGE1") { updateStage1(); drawStage1(); animId = requestAnimationFrame(gameLoop); }
+        if (state === "STAGE1" && !monsterPausedByVisibility) { updateStage1(); drawStage1(); animId = requestAnimationFrame(gameLoop); }
     }
 
     function updateStage1() {
@@ -772,7 +816,7 @@
     }
 
     function gameOver() {
-        state = "GAMEOVER"; clearInterval(intervalId); cancelAnimationFrame(animId);
+        state = "GAMEOVER"; monsterPausedByVisibility = false; clearInterval(intervalId); cancelAnimationFrame(animId);
         document.getElementById("stage1UI").style.display = "none";
         document.getElementById("monsterKeypad").style.display = "none";
         document.getElementById("legendBox").style.display = "none";
@@ -783,13 +827,13 @@
     }
 
     function gameWin() {
-        state = "GAMEWIN"; clearInterval(intervalId); cancelAnimationFrame(animId);
+        state = "GAMEWIN"; monsterPausedByVisibility = false; clearInterval(intervalId); cancelAnimationFrame(animId);
         document.getElementById("stage1UI").style.display = "none";
         document.getElementById("monsterKeypad").style.display = "none";
         document.getElementById("legendBox").style.display = "none";
         document.getElementById("dangerWarning").style.display = "none";
         document.getElementById("gameArea").classList.remove("danger-active");
-        showResultOverlay(`<h2 style="color: #2ecc71; font-size: 40px;">방어 성공! 🎉</h2><p>100초 동안 성벽을 지켜냈습니다!</p><p style="color:#f1c40f; font-weight:bold;">처치한 괴물: ${killCount}마리</p><button class="btn" id="btnResultReturn2">돌아가기</button>`);
+        showResultOverlay(`<h2 style="color: #2ecc71; font-size: 40px;">방어 성공! 🎉</h2><p>100초 동안 성벽을 지켜냈습니다!</p><p style="font-weight:bold;">클리어 난이도: ${getMonsterDifficultyLabel()}</p><p style="color:#f1c40f; font-weight:bold;">처치한 괴물: ${killCount}마리</p><button class="btn" id="btnResultReturn2">돌아가기</button>`);
         document.getElementById("btnResultReturn2").addEventListener("click", resetToLobby);
     }
 
